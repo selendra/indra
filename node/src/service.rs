@@ -4,9 +4,10 @@
 use std::sync::Arc;
 
 // Local Runtime Types
-use indra_runtime::{
-	opaque::Block, AccountId, Balance, Hash, Index as Nonce, RuntimeApi,
+use node_primitives::{
+	opaque::Block, AccountId, Balance, Hash, Index as Nonce,
 };
+use indra_runtime::RuntimeApi;
 
 // Cumulus Imports
 use cumulus_client_consensus_aura::{

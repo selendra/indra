@@ -88,3 +88,5 @@ selendra-cli = { git = "https://github.com/selendra/selendrachain", branch = "se
 selendra-parachain = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus" }
 selendra-primitives = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus" }
 selendra-service = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus" }
+
+node-primitives = { path = "../primitive"}

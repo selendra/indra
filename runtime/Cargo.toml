@@ -70,6 +70,8 @@ pallet-collator-selection = { git = 'https://github.com/selendra/selendrachain',
 parachain-info = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
 cumulus-pallet-session-benchmarking = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
 
+node-primitives = { path = "../primitive", default-features = false }
+
 [features]
 default = [
 	"std",
@@ -111,6 +113,7 @@ std = [
 	"cumulus-primitives-timestamp/std",
 	"cumulus-primitives-utility/std",
 	"cumulus-pallet-dmp-queue/std",
+	"node-primitives/std",
 	"parachain-info/std",
 	"selendra-parachain/std",
 	"selendra-runtime-common/std",

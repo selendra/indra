@@ -1,9 +1,11 @@
 use cumulus_primitives_core::ParaId;
-use indra_runtime::{AccountId, AuraId, Signature, EXISTENTIAL_DEPOSIT};
+use hex_literal::hex;
+use indra_runtime::constants::currency::{EXISTENTIAL_DEPOSIT, UNITS};
+use node_primitives::{AccountId, AuraId, Signature};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
 use serde::{Deserialize, Serialize};
-use sp_core::{sr25519, Pair, Public};
+use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
@@ -97,6 +99,7 @@ pub fn development_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
 					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
 				2000.into(),
 			)
 		},
@@ -143,6 +146,66 @@ pub fn local_testnet_config() -> ChainSpec {
 					get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
 					get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
 				],
+				get_account_id_from_seed::<sr25519::Public>("Alice"),
+				2000.into(),
+			)
+		},
+		// Bootnodes
+		Vec::new(),
+		// Telemetry
+		None,
+		// Protocol ID
+		Some("indra"),
+		// Properties
+		Some(properties),
+		// Extensions
+		Extensions {
+			relay_chain: "local".into(), // You MUST set this to the correct network!
+			para_id: 2000,
+		},
+	)
+}
+
+pub fn indra_config() -> ChainSpec {
+	// Give your base currency a ira name and decimal places
+	let mut properties = sc_chain_spec::Properties::new();
+	properties.insert("tokenSymbol".into(), "IRA".into());
+	properties.insert("tokenDecimals".into(), 18.into());
+	properties.insert("ss58Format".into(), 42.into());
+
+	ChainSpec::from_genesis(
+		// Name
+		"Indra Testnet",
+		// ID
+		"indra",
+		ChainType::Local,
+		move || {
+			testnet_genesis(
+				// initial collators.
+				vec![
+					(
+						hex!("66006c1c52a614ddd82fac2241bf5f61e9edd4647b114dfe66842104fd40b56c")
+							.into(),
+						hex!("66006c1c52a614ddd82fac2241bf5f61e9edd4647b114dfe66842104fd40b56c")
+							.unchecked_into(),
+					),
+					(
+						hex!("dca5d29a84f0aaa2bc623f9f11d7f21cafa3b2e358bee3a950ae121fd58b8f31")
+							.into(),
+						hex!("dca5d29a84f0aaa2bc623f9f11d7f21cafa3b2e358bee3a950ae121fd58b8f31")
+							.unchecked_into(),
+					),
+				],
+				// endowed_accounts
+				vec![
+					hex!("9065517c47c4710a44769adac5638b2f77db30b71ac10cb5b30e467b1af98f19").into(),
+					hex!("cc4f1627136cc9ab173ca1079fcebcb4b1b374cee0d62ebe2ccbca355e3eaf74").into(),
+					hex!("fe99233e10d00fb26b37f2c85e3690c8b9998b51f07f3c0bf519b8320a38803a").into(),
+					hex!("bc061a86ddb82e9079feb48da3abc67da083b84455713887e83f1426de043b6e").into(),
+				],
+				// sudo key
+				hex!("9065517c47c4710a44769adac5638b2f77db30b71ac10cb5b30e467b1af98f19").into(),
+				// parachain id
 				1000.into(),
 			)
 		},
@@ -165,8 +228,12 @@ pub fn local_testnet_config() -> ChainSpec {
 fn testnet_genesis(
 	invulnerables: Vec<(AccountId, AuraId)>,
 	endowed_accounts: Vec<AccountId>,
+	root_key: AccountId,
 	id: ParaId,
 ) -> indra_runtime::GenesisConfig {
+
+	const ENDOWMENT: u128 = 250000 * UNITS;
+
 	indra_runtime::GenesisConfig {
 		system: indra_runtime::SystemConfig {
 			code: indra_runtime::WASM_BINARY
@@ -174,7 +241,7 @@ fn testnet_genesis(
 				.to_vec(),
 		},
 		balances: indra_runtime::BalancesConfig {
-			balances: endowed_accounts.iter().cloned().map(|k| (k, 1 << 60)).collect(),
+			balances: endowed_accounts.iter().cloned().map(|k| (k, ENDOWMENT)).collect(),
 		},
 		parachain_info: indra_runtime::ParachainInfoConfig { parachain_id: id },
 		collator_selection: indra_runtime::CollatorSelectionConfig {
@@ -199,5 +266,6 @@ fn testnet_genesis(
 		aura: Default::default(),
 		aura_ext: Default::default(),
 		parachain_system: Default::default(),
+		sudo: indra_runtime::SudoConfig { key: root_key },
 	}
 }

@@ -6,14 +6,13 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use smallvec::smallvec;
 use sp_api::impl_runtime_apis;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
-	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
+	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT },
 	transaction_validity::{TransactionSource, TransactionValidity},
-	ApplyExtrinsicResult, MultiSignature,
+	ApplyExtrinsicResult,
 };
 
 use sp_std::prelude::*;
@@ -22,20 +21,11 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
 use frame_support::{
-	construct_runtime, match_type, parameter_types,
+	construct_runtime, match_type, parameter_types, PalletId,
 	traits::{Everything, Nothing},
-	weights::{
-		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, WEIGHT_PER_SECOND},
-		DispatchClass, IdentityFee, Weight, WeightToFeeCoefficient, WeightToFeeCoefficients,
-		WeightToFeePolynomial,
-	},
-	PalletId,
+	weights::{IdentityFee, Weight},
 };
-use frame_system::{
-	limits::{BlockLength, BlockWeights},
-	EnsureRoot,
-};
-pub use sp_consensus_aura::sr25519::AuthorityId as AuraId;
+use frame_system::EnsureRoot;
 pub use sp_runtime::{MultiAddress, Perbill, Permill};
 
 #[cfg(any(feature = "std", test))]
@@ -57,109 +47,13 @@ use xcm_builder::{
 };
 use xcm_executor::{Config, XcmExecutor};
 
-/// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
-pub type Signature = MultiSignature;
+pub mod constants;
+use constants::{currency::*, time::*, fee::WeightToFee};
 
-/// Some way of identifying an account on the chain. We intentionally make it equivalent
-/// to the public key of our transaction signing scheme.
-pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
-
-/// Balance of an account.
-pub type Balance = u128;
-
-/// Index of a transaction in the chain.
-pub type Index = u32;
-
-/// A hash of some data used by the chain.
-pub type Hash = sp_core::H256;
-
-/// An index to a block.
-pub type BlockNumber = u32;
-
-/// The address format for describing accounts.
-pub type Address = MultiAddress<AccountId, ()>;
-
-/// Block header type as expected by this runtime.
-pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
-
-/// Block type as expected by this runtime.
-pub type Block = generic::Block<Header, UncheckedExtrinsic>;
-
-/// A Block signed with a Justification
-pub type SignedBlock = generic::SignedBlock<Block>;
-
-/// BlockId type as expected by this runtime.
-pub type BlockId = generic::BlockId<Block>;
-
-/// The SignedExtension to the basic transaction logic.
-pub type SignedExtra = (
-	frame_system::CheckSpecVersion<Runtime>,
-	frame_system::CheckTxVersion<Runtime>,
-	frame_system::CheckGenesis<Runtime>,
-	frame_system::CheckEra<Runtime>,
-	frame_system::CheckNonce<Runtime>,
-	frame_system::CheckWeight<Runtime>,
-	pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
-);
-
-/// Unchecked extrinsic type as expected by this runtime.
-pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, Call, Signature, SignedExtra>;
-
-/// Extrinsic type that has already been checked.
-pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, Call, SignedExtra>;
-
-/// Executive: handles dispatch to the various modules.
-pub type Executive = frame_executive::Executive<
-	Runtime,
-	Block,
-	frame_system::ChainContext<Runtime>,
-	Runtime,
-	AllPallets,
->;
-
-/// Handles converting a weight scalar to a fee value, based on the scale and granularity of the
-/// node's balance type.
-///
-/// This should typically create a mapping between the following ranges:
-///   - `[0, MAXIMUM_BLOCK_WEIGHT]`
-///   - `[Balance::min, Balance::max]`
-///
-/// Yet, it can be used for any other sort of change to weight-fee. Some examples being:
-///   - Setting it to `0` will essentially disable the weight fee.
-///   - Setting it to `1` will cause the literal `#[weight = x]` values to be charged.
-pub struct WeightToFee;
-impl WeightToFeePolynomial for WeightToFee {
-	type Balance = Balance;
-	fn polynomial() -> WeightToFeeCoefficients<Self::Balance> {
-		// in Rococo, extrinsic base weight (smallest non-zero weight) is mapped to 1 MILLIUNIT:
-		// in our template, we map to 1/10 of that, or 1/10 MILLIUNIT
-		let p = MILLIUNIT / 10;
-		let q = 100 * Balance::from(ExtrinsicBaseWeight::get());
-		smallvec![WeightToFeeCoefficient {
-			degree: 1,
-			negative: false,
-			coeff_frac: Perbill::from_rational(p % q, q),
-			coeff_integer: p / q,
-		}]
-	}
-}
-
-/// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
-/// the specifics of the runtime. They can then be made to be agnostic over specific formats
-/// of data like extrinsics, allowing for them to continue syncing the network through upgrades
-/// to even the core data structures.
-pub mod opaque {
-	use super::*;
-	use sp_runtime::{generic, traits::BlakeTwo256};
-
-	pub use sp_runtime::OpaqueExtrinsic as UncheckedExtrinsic;
-	/// Opaque block header type.
-	pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
-	/// Opaque block type.
-	pub type Block = generic::Block<Header, UncheckedExtrinsic>;
-	/// Opaque block identifier type.
-	pub type BlockId = generic::BlockId<Block>;
-}
+use node_primitives::{
+	opaque, AccountId, AuraId, Balance, BlockNumber, Hash, Header, Index, Signature,
+	RuntimeBlockLength, RuntimeBlockWeights, MAXIMUM_BLOCK_WEIGHT
+};
 
 impl_opaque_keys! {
 	pub struct SessionKeys {
@@ -169,50 +63,14 @@ impl_opaque_keys! {
 
 #[sp_version::runtime_version]
 pub const VERSION: RuntimeVersion = RuntimeVersion {
-	spec_name: create_runtime_str!("template-parachain"),
-	impl_name: create_runtime_str!("template-parachain"),
+	spec_name: create_runtime_str!("indra-testnet"),
+	impl_name: create_runtime_str!("indra-parachain"),
 	authoring_version: 1,
 	spec_version: 1,
 	impl_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 1,
 };
-
-/// This determines the average expected block time that we are targeting.
-/// Blocks will be produced at a minimum duration defined by `SLOT_DURATION`.
-/// `SLOT_DURATION` is picked up by `pallet_timestamp` which is in turn picked
-/// up by `pallet_aura` to implement `fn slot_duration()`.
-///
-/// Change this to adjust the block time.
-pub const MILLISECS_PER_BLOCK: u64 = 12000;
-
-// NOTE: Currently it is not possible to change the slot duration after the chain has started.
-//       Attempting to do so will brick block production.
-pub const SLOT_DURATION: u64 = MILLISECS_PER_BLOCK;
-
-// Time is measured by number of blocks.
-pub const MINUTES: BlockNumber = 60_000 / (MILLISECS_PER_BLOCK as BlockNumber);
-pub const HOURS: BlockNumber = MINUTES * 60;
-pub const DAYS: BlockNumber = HOURS * 24;
-
-// Unit = the base number of indivisible units for balances
-pub const UNIT: Balance = 1_000_000_000_000;
-pub const MILLIUNIT: Balance = 1_000_000_000;
-pub const MICROUNIT: Balance = 1_000_000;
-
-/// The existential deposit. Set to 1/10 of the Connected Relay Chain.
-pub const EXISTENTIAL_DEPOSIT: Balance = MILLIUNIT;
-
-/// We assume that ~5% of the block weight is consumed by `on_initialize` handlers. This is
-/// used to limit the maximal weight of a single extrinsic.
-const AVERAGE_ON_INITIALIZE_RATIO: Perbill = Perbill::from_percent(5);
-
-/// We allow `Normal` extrinsics to fill up the block up to 75%, the rest can be used by
-/// `Operational` extrinsics.
-const NORMAL_DISPATCH_RATIO: Perbill = Perbill::from_percent(75);
-
-/// We allow for 0.5 of a second of compute with a 12 second average block time.
-const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
 
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
@@ -222,31 +80,6 @@ pub fn native_version() -> NativeVersion {
 
 parameter_types! {
 	pub const Version: RuntimeVersion = VERSION;
-
-	// This part is copied from Substrate's `bin/node/runtime/src/lib.rs`.
-	//  The `RuntimeBlockLength` and `RuntimeBlockWeights` exist here because the
-	// `DeletionWeightLimit` and `DeletionQueueDepth` depend on those to parameterize
-	// the lazy contract deletion.
-	pub RuntimeBlockLength: BlockLength =
-		BlockLength::max_with_normal_ratio(5 * 1024 * 1024, NORMAL_DISPATCH_RATIO);
-	pub RuntimeBlockWeights: BlockWeights = BlockWeights::builder()
-		.base_block(BlockExecutionWeight::get())
-		.for_class(DispatchClass::all(), |weights| {
-			weights.base_extrinsic = ExtrinsicBaseWeight::get();
-		})
-		.for_class(DispatchClass::Normal, |weights| {
-			weights.max_total = Some(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT);
-		})
-		.for_class(DispatchClass::Operational, |weights| {
-			weights.max_total = Some(MAXIMUM_BLOCK_WEIGHT);
-			// Operational transactions have some extra reserved space, so that they
-			// are included even if block reached `MAXIMUM_BLOCK_WEIGHT`.
-			weights.reserved = Some(
-				MAXIMUM_BLOCK_WEIGHT - NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT
-			);
-		})
-		.avg_block_initialization(AVERAGE_ON_INITIALIZE_RATIO)
-		.build_or_panic();
 	pub const SS58Prefix: u16 = 42;
 }
 
@@ -346,7 +179,7 @@ impl pallet_balances::Config for Runtime {
 
 parameter_types! {
 	/// Relay Chain `TransactionByteFee` / 10
-	pub const TransactionByteFee: Balance = 10 * MICROUNIT;
+	pub const TransactionByteFee: Balance = 10 * MILLICENTS;
 	pub const OperationalFeeMultiplier: u8 = 5;
 }
 
@@ -580,6 +413,11 @@ impl pallet_collator_selection::Config for Runtime {
 	type WeightInfo = ();
 }
 
+impl pallet_sudo::Config for Runtime {
+	type Event = Event;
+	type Call = Call;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
 	pub enum Runtime where
@@ -611,8 +449,49 @@ construct_runtime!(
 		SelendraXcm: pallet_xcm::{Pallet, Call, Event<T>, Origin} = 31,
 		CumulusXcm: cumulus_pallet_xcm::{Pallet, Event<T>, Origin} = 32,
 		DmpQueue: cumulus_pallet_dmp_queue::{Pallet, Call, Storage, Event<T>} = 33,
+
+		// Sudo pallet to force root
+		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>} = 50,
 	}
 );
+
+/// The address format for describing accounts.
+pub type Address = MultiAddress<AccountId, ()>;
+
+/// Block type as expected by this runtime.
+pub type Block = generic::Block<Header, UncheckedExtrinsic>;
+
+/// A Block signed with a Justification
+pub type SignedBlock = generic::SignedBlock<Block>;
+
+/// BlockId type as expected by this runtime.
+pub type BlockId = generic::BlockId<Block>;
+
+/// The SignedExtension to the basic transaction logic.
+pub type SignedExtra = (
+	frame_system::CheckSpecVersion<Runtime>,
+	frame_system::CheckTxVersion<Runtime>,
+	frame_system::CheckGenesis<Runtime>,
+	frame_system::CheckEra<Runtime>,
+	frame_system::CheckNonce<Runtime>,
+	frame_system::CheckWeight<Runtime>,
+	pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
+);
+
+/// Unchecked extrinsic type as expected by this runtime.
+pub type UncheckedExtrinsic = generic::UncheckedExtrinsic<Address, Call, Signature, SignedExtra>;
+
+/// Extrinsic type that has already been checked.
+pub type CheckedExtrinsic = generic::CheckedExtrinsic<AccountId, Call, SignedExtra>;
+
+/// Executive: handles dispatch to the various modules.
+pub type Executive = frame_executive::Executive<
+	Runtime,
+	Block,
+	frame_system::ChainContext<Runtime>,
+	Runtime,
+	AllPallets,
+>;
 
 impl_runtime_apis! {
 	impl sp_consensus_aura::AuraApi<Block, AuraId> for Runtime {

@@ -130,28 +130,20 @@ pub fn local_testnet_config() -> ChainSpec {
 				vec![
 					(
 						get_account_id_from_seed::<sr25519::Public>("Dave"),
-						get_collator_keys_from_seed("Dave"),
+						get_collator_keys_from_seed("Alice"),
 					),
 					(
 						get_account_id_from_seed::<sr25519::Public>("Charlie"),
-						get_collator_keys_from_seed("Charlie"),
+						get_collator_keys_from_seed("Bob"),
 					),
 				],
 				vec![
 					get_account_id_from_seed::<sr25519::Public>("Alice"),
 					get_account_id_from_seed::<sr25519::Public>("Bob"),
-					get_account_id_from_seed::<sr25519::Public>("Charlie"),
-					get_account_id_from_seed::<sr25519::Public>("Dave"),
-					get_account_id_from_seed::<sr25519::Public>("Eve"),
-					get_account_id_from_seed::<sr25519::Public>("Ferdie"),
 					get_account_id_from_seed::<sr25519::Public>("Alice//stash"),
 					get_account_id_from_seed::<sr25519::Public>("Bob//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Charlie//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Dave//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Eve//stash"),
-					get_account_id_from_seed::<sr25519::Public>("Ferdie//stash"),
 				],
-				2000.into(),
+				1000.into(),
 			)
 		},
 		// Bootnodes
@@ -159,13 +151,13 @@ pub fn local_testnet_config() -> ChainSpec {
 		// Telemetry
 		None,
 		// Protocol ID
-		Some("indra-local"),
+		Some("indra"),
 		// Properties
 		Some(properties),
 		// Extensions
 		Extensions {
-			relay_chain: "local".into(), // You MUST set this to the correct network!
-			para_id: 2000,
+			relay_chain: "testnet".into(), // You MUST set this to the correct network!
+			para_id: 1000,
 		},
 	)
 }

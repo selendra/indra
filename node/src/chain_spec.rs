@@ -61,9 +61,9 @@ pub fn template_session_keys(keys: AuraId) -> indra_runtime::SessionKeys {
 }
 
 pub fn development_config() -> ChainSpec {
-	// Give your base currency a ira name and decimal places
+	// Give your base currency a sel name and decimal places
 	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "IRA".into());
+	properties.insert("tokenSymbol".into(), "SEL".into());
 	properties.insert("tokenDecimals".into(), 18.into());
 	properties.insert("ss58Format".into(), 42.into());
 
@@ -115,9 +115,9 @@ pub fn development_config() -> ChainSpec {
 }
 
 pub fn local_testnet_config() -> ChainSpec {
-	// Give your base currency a ira name and decimal places
+	// Give your base currency a sel name and decimal places
 	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "IRA".into());
+	properties.insert("tokenSymbol".into(), "SEL".into());
 	properties.insert("tokenDecimals".into(), 18.into());
 	properties.insert("ss58Format".into(), 42.into());
 
@@ -167,9 +167,9 @@ pub fn local_testnet_config() -> ChainSpec {
 }
 
 pub fn indra_config() -> ChainSpec {
-	// Give your base currency a ira name and decimal places
+	// Give your base currency a sel name and decimal places
 	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("tokenSymbol".into(), "IRA".into());
+	properties.insert("tokenSymbol".into(), "SEL".into());
 	properties.insert("tokenDecimals".into(), 18.into());
 	properties.insert("ss58Format".into(), 42.into());
 

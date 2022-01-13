@@ -10,7 +10,7 @@ use sp_api::impl_runtime_apis;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
 	create_runtime_str, generic, impl_opaque_keys,
-	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT },
+	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT},
 	transaction_validity::{TransactionSource, TransactionValidity},
 	ApplyExtrinsicResult,
 };
@@ -21,9 +21,10 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
 use frame_support::{
-	construct_runtime, match_type, parameter_types, PalletId,
+	construct_runtime, match_type, parameter_types,
 	traits::{Everything, Nothing},
 	weights::{IdentityFee, Weight},
+	PalletId,
 };
 use frame_system::EnsureRoot;
 pub use sp_runtime::{MultiAddress, Perbill, Permill};
@@ -48,11 +49,11 @@ use xcm_builder::{
 use xcm_executor::{Config, XcmExecutor};
 
 pub mod constants;
-use constants::{currency::*, time::*, fee::WeightToFee};
+use constants::{currency::*, fee::WeightToFee, time::*};
 
 use node_primitives::{
-	opaque, AccountId, AuraId, Balance, BlockNumber, Hash, Header, Index, Signature,
-	RuntimeBlockLength, RuntimeBlockWeights, MAXIMUM_BLOCK_WEIGHT
+	opaque, AccountId, AuraId, Balance, BlockNumber, Hash, Header, Index, RuntimeBlockLength,
+	RuntimeBlockWeights, Signature, MAXIMUM_BLOCK_WEIGHT,
 };
 
 impl_opaque_keys! {

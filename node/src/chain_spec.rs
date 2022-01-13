@@ -9,8 +9,7 @@ use sp_core::{crypto::UncheckedInto, sr25519, Pair, Public};
 use sp_runtime::traits::{IdentifyAccount, Verify};
 
 /// Specialized `ChainSpec` for the normal parachain runtime.
-pub type ChainSpec =
-	sc_service::GenericChainSpec<indra_runtime::GenesisConfig, Extensions>;
+pub type ChainSpec = sc_service::GenericChainSpec<indra_runtime::GenesisConfig, Extensions>;
 
 /// Helper function to generate a crypto pair from seed
 pub fn get_public_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Public {
@@ -231,7 +230,6 @@ fn testnet_genesis(
 	root_key: AccountId,
 	id: ParaId,
 ) -> indra_runtime::GenesisConfig {
-
 	const ENDOWMENT: u128 = 250000 * UNITS;
 
 	indra_runtime::GenesisConfig {

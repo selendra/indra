@@ -15,15 +15,14 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use frame_system::{
-	limits::{BlockLength, BlockWeights},
-};
 use frame_support::{
-	parameter_types, 
+	parameter_types,
 	weights::{
-		constants::{BlockExecutionWeight, ExtrinsicBaseWeight},DispatchClass, Weight, constants::WEIGHT_PER_SECOND
+		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, WEIGHT_PER_SECOND},
+		DispatchClass, Weight,
 	},
 };
+use frame_system::limits::{BlockLength, BlockWeights};
 use sp_runtime::Perbill;
 
 pub use opaque::*;
@@ -102,8 +101,6 @@ mod types {
 	// Id used for identifying assets.
 	pub type AssetId = u32;
 }
-
-
 
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats

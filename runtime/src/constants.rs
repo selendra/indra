@@ -17,16 +17,15 @@ pub mod currency {
 	use node_primitives::Balance;
 
 	/// The existential deposit. Set to 1/10 of its parent Relay Chain (v9010).
-	pub const EXISTENTIAL_DEPOSIT: Balance = 10 * CENTS;
+	pub const EXISTENTIAL_DEPOSIT: Balance = 1 * CENTS;
 
 	pub const UNITS: Balance = 1_000_000_000_000_000_000;
-	pub const DOLLARS: Balance = 1000 / UNITS;
-	pub const CENTS: Balance = UNITS / 100; // 100_000_000
-	pub const MILLICENTS: Balance = CENTS / 1_000; // 100_000
+	pub const CENTS: Balance = UNITS / 10_000;
+	pub const MILLICENTS: Balance = CENTS / 1_000;
+	pub const NANO: Balance = MILLICENTS / 1000;
 
 	pub const fn deposit(items: u32, bytes: u32) -> Balance {
-		// 1/10 of Polkadot v9010
-		(items as Balance * 20 * DOLLARS + (bytes as Balance) * 100 * MILLICENTS) / 10
+		items as Balance * 5_000 * CENTS + (bytes as Balance) * 50 * MILLICENTS
 	}
 }
 
@@ -53,14 +52,13 @@ pub mod fee {
 	/// Yet, it can be used for any other sort of change to weight-fee. Some examples being:
 	///   - Setting it to `0` will essentially disable the weight fee.
 	///   - Setting it to `1` will cause the literal `#[weight = x]` values to be charged.
+
 	pub struct WeightToFee;
 	impl WeightToFeePolynomial for WeightToFee {
 		type Balance = Balance;
 		fn polynomial() -> WeightToFeeCoefficients<Self::Balance> {
-			// in Polkadot, extrinsic base weight (smallest non-zero weight) is mapped to 1/10 CENT:
-			// in Statemint, we map to 1/10 of that, or 1/100 CENT
-			let p = super::currency::CENTS;
-			let q = 100 * Balance::from(ExtrinsicBaseWeight::get());
+			let p = 100 * super::currency::MILLICENTS;
+			let q = 10 * Balance::from(ExtrinsicBaseWeight::get());
 			smallvec![WeightToFeeCoefficient {
 				degree: 1,
 				negative: false,

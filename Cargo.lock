@@ -1176,7 +1176,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-cli"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "sc-cli",
  "sc-service",
@@ -1186,7 +1186,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-collator"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-client-consensus-common",
  "cumulus-client-network",
@@ -1209,7 +1209,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-consensus-aura"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "cumulus-client-consensus-common",
@@ -1239,7 +1239,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-consensus-common"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "dyn-clone",
@@ -1259,7 +1259,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-network"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "derive_more",
  "futures 0.3.18",
@@ -1282,7 +1282,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-pov-recovery"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-primitives-core",
  "futures 0.3.18",
@@ -1305,7 +1305,7 @@ dependencies = [
 [[package]]
 name = "cumulus-client-service"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-client-collator",
  "cumulus-client-consensus-common",
@@ -1334,7 +1334,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-aura-ext"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "frame-executive",
  "frame-support",
@@ -1352,7 +1352,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-dmp-queue"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1370,7 +1370,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-parachain-system"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-pallet-parachain-system-proc-macro",
  "cumulus-primitives-core",
@@ -1399,7 +1399,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-parachain-system-proc-macro"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "proc-macro-crate 1.1.0",
  "proc-macro2",
@@ -1410,7 +1410,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-session-benchmarking"
 version = "3.0.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -1423,7 +1423,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-xcm"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1440,7 +1440,7 @@ dependencies = [
 [[package]]
 name = "cumulus-pallet-xcmp-queue"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1458,7 +1458,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-core"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "frame-support",
  "impl-trait-for-tuples 0.2.1",
@@ -1475,7 +1475,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-parachain-inherent"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "cumulus-primitives-core",
@@ -1497,7 +1497,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-timestamp"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-primitives-core",
  "sp-inherents",
@@ -1508,7 +1508,7 @@ dependencies = [
 [[package]]
 name = "cumulus-primitives-utility"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -1525,7 +1525,7 @@ dependencies = [
 [[package]]
 name = "cumulus-relay-sproof-builder"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-primitives-core",
  "parity-scale-codec",
@@ -1990,7 +1990,7 @@ dependencies = [
 [[package]]
 name = "fc-consensus"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "derive_more",
@@ -2016,7 +2016,7 @@ dependencies = [
 [[package]]
 name = "fc-db"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "fp-storage",
  "kvdb",
@@ -2032,7 +2032,7 @@ dependencies = [
 [[package]]
 name = "fc-mapping-sync"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "fc-consensus",
  "fc-db",
@@ -2050,7 +2050,7 @@ dependencies = [
 [[package]]
 name = "fc-rpc"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -2096,7 +2096,7 @@ dependencies = [
 [[package]]
 name = "fc-rpc-core"
 version = "1.1.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -2204,7 +2204,7 @@ dependencies = [
 [[package]]
 name = "fp-consensus"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "ethereum",
  "parity-scale-codec",
@@ -2218,7 +2218,7 @@ dependencies = [
 [[package]]
 name = "fp-evm"
 version = "3.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "evm",
  "parity-scale-codec",
@@ -2230,7 +2230,7 @@ dependencies = [
 [[package]]
 name = "fp-rpc"
 version = "3.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -2247,7 +2247,7 @@ dependencies = [
 [[package]]
 name = "fp-self-contained"
 version = "1.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "ethereum",
  "frame-support",
@@ -2264,7 +2264,7 @@ dependencies = [
 [[package]]
 name = "fp-storage"
 version = "2.0.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 
 [[package]]
 name = "frame-benchmarking"
@@ -3183,15 +3183,21 @@ dependencies = [
  "hex-literal",
  "log",
  "node-primitives",
+ "pallet-asset-tx-payment",
+ "pallet-assets",
  "pallet-aura",
  "pallet-authorship",
  "pallet-balances",
  "pallet-collator-selection",
+ "pallet-multisig",
+ "pallet-proxy",
  "pallet-session",
  "pallet-sudo",
  "pallet-timestamp",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-uniques",
+ "pallet-utility",
  "pallet-xcm",
  "parachain-info",
  "parity-scale-codec",
@@ -4418,7 +4424,7 @@ dependencies = [
 [[package]]
 name = "metered-channel"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "derive_more",
  "futures 0.3.18",
@@ -4671,14 +4677,25 @@ dependencies = [
 name = "node-primitives"
 version = "0.1.0"
 dependencies = [
+ "frame-executive",
  "frame-support",
  "frame-system",
+ "pallet-asset-tx-payment",
+ "pallet-assets",
+ "pallet-authorship",
+ "pallet-balances",
+ "pallet-collator-selection",
  "parity-scale-codec",
  "scale-info",
- "sp-application-crypto",
+ "selendra-primitives",
+ "selendra-runtime-common",
  "sp-consensus-aura",
  "sp-core",
+ "sp-io",
  "sp-runtime",
+ "sp-std",
+ "xcm",
+ "xcm-executor",
 ]
 
 [[package]]
@@ -4922,6 +4939,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-asset-tx-payment"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.14#de6033a2aa4f0191877200516fbc2655399faa4b"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "pallet-transaction-payment",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-assets"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.14#de6033a2aa4f0191877200516fbc2655399faa4b"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-aura"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.14#de6033a2aa4f0191877200516fbc2655399faa4b"
@@ -5083,7 +5131,7 @@ dependencies = [
 [[package]]
 name = "pallet-bridge"
 version = "0.0.1"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "blake2-rfc",
  "frame-support",
@@ -5101,7 +5149,7 @@ dependencies = [
 [[package]]
 name = "pallet-bridge-transfer"
 version = "0.0.1"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -5120,7 +5168,7 @@ dependencies = [
 [[package]]
 name = "pallet-collator-selection"
 version = "3.0.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -5210,7 +5258,7 @@ dependencies = [
 [[package]]
 name = "pallet-ethereum"
 version = "4.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -5240,7 +5288,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm"
 version = "6.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "evm",
  "evm-gasometer",
@@ -5268,7 +5316,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-accounts"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "fp-evm",
  "frame-support",
@@ -5287,7 +5335,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-blake2"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "fp-evm",
  "sp-core",
@@ -5297,7 +5345,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-bn128"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "fp-evm",
  "sp-core",
@@ -5308,7 +5356,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-dispatch"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "fp-evm",
  "frame-support",
@@ -5321,7 +5369,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-modexp"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "fp-evm",
  "num",
@@ -5332,7 +5380,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-sha3fips"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "fp-evm",
  "sp-core",
@@ -5343,7 +5391,7 @@ dependencies = [
 [[package]]
 name = "pallet-evm-precompile-simple"
 version = "2.0.0-dev"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "fp-evm",
  "ripemd160",
@@ -5733,6 +5781,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-uniques"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.14#de6033a2aa4f0191877200516fbc2655399faa4b"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-utility"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate?branch=polkadot-v0.9.14#de6033a2aa4f0191877200516fbc2655399faa4b"
@@ -5764,7 +5826,7 @@ dependencies = [
 [[package]]
 name = "pallet-xcm"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -5782,7 +5844,7 @@ dependencies = [
 [[package]]
 name = "parachain-info"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "cumulus-primitives-core",
  "frame-support",
@@ -7890,7 +7952,7 @@ dependencies = [
 [[package]]
 name = "selendra-approval-distribution"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "selendra-node-network-protocol",
@@ -7904,7 +7966,7 @@ dependencies = [
 [[package]]
 name = "selendra-availability-bitfield-distribution"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "selendra-node-network-protocol",
@@ -7917,7 +7979,7 @@ dependencies = [
 [[package]]
 name = "selendra-availability-distribution"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "derive_more",
  "futures 0.3.18",
@@ -7939,7 +8001,7 @@ dependencies = [
 [[package]]
 name = "selendra-availability-recovery"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "lru 0.7.0",
@@ -7959,7 +8021,7 @@ dependencies = [
 [[package]]
 name = "selendra-cli"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "frame-benchmarking-cli",
  "futures 0.3.18",
@@ -7979,7 +8041,7 @@ dependencies = [
 [[package]]
 name = "selendra-client"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "beefy-primitives",
  "fp-rpc",
@@ -8010,7 +8072,7 @@ dependencies = [
 [[package]]
 name = "selendra-collator-protocol"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "always-assert",
  "derive_more",
@@ -8031,7 +8093,7 @@ dependencies = [
 [[package]]
 name = "selendra-core-primitives"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "parity-scale-codec",
  "parity-util-mem",
@@ -8044,7 +8106,7 @@ dependencies = [
 [[package]]
 name = "selendra-dispute-distribution"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "derive_more",
  "futures 0.3.18",
@@ -8066,7 +8128,7 @@ dependencies = [
 [[package]]
 name = "selendra-erasure-coding"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "parity-scale-codec",
  "reed-solomon-novelpoly",
@@ -8080,7 +8142,7 @@ dependencies = [
 [[package]]
 name = "selendra-gossip-support"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "futures-timer 3.0.2",
@@ -8100,7 +8162,7 @@ dependencies = [
 [[package]]
 name = "selendra-network-bridge"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "futures 0.3.18",
@@ -8119,7 +8181,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-collation-generation"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "parity-scale-codec",
@@ -8137,7 +8199,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-approval-voting"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "bitvec",
  "derive_more",
@@ -8165,7 +8227,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-av-store"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "bitvec",
  "futures 0.3.18",
@@ -8185,7 +8247,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-backing"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "bitvec",
  "futures 0.3.18",
@@ -8203,7 +8265,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-bitfield-signing"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "selendra-node-subsystem",
@@ -8218,7 +8280,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-candidate-validation"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "futures 0.3.18",
@@ -8236,7 +8298,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-chain-api"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "sc-client-api",
@@ -8251,7 +8313,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-chain-selection"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "futures-timer 3.0.2",
@@ -8268,7 +8330,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-dispute-coordinator"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "bitvec",
  "derive_more",
@@ -8287,7 +8349,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-dispute-participation"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "selendra-node-primitives",
@@ -8300,7 +8362,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-parachains-inherent"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "futures 0.3.18",
@@ -8317,7 +8379,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-provisioner"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "bitvec",
  "futures 0.3.18",
@@ -8334,7 +8396,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-pvf"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "always-assert",
  "assert_matches",
@@ -8365,7 +8427,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-core-runtime-api"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "memory-lru",
@@ -8383,7 +8445,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-jaeger"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-std",
  "lazy_static",
@@ -8401,7 +8463,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-metrics"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "futures-timer 3.0.2",
@@ -8412,7 +8474,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-network-protocol"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "derive_more",
@@ -8430,7 +8492,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-primitives"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "bounded-vec",
  "futures 0.3.18",
@@ -8452,7 +8514,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-subsystem"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "selendra-node-jaeger",
  "selendra-node-subsystem-types",
@@ -8462,7 +8524,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-subsystem-types"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "derive_more",
  "futures 0.3.18",
@@ -8481,7 +8543,7 @@ dependencies = [
 [[package]]
 name = "selendra-node-subsystem-util"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "derive_more",
@@ -8509,7 +8571,7 @@ dependencies = [
 [[package]]
 name = "selendra-overseer"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "futures 0.3.18",
  "futures-timer 3.0.2",
@@ -8530,7 +8592,7 @@ dependencies = [
 [[package]]
 name = "selendra-overseer-gen"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "futures 0.3.18",
@@ -8547,7 +8609,7 @@ dependencies = [
 [[package]]
 name = "selendra-overseer-gen-proc-macro"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "proc-macro-crate 1.1.0",
  "proc-macro2",
@@ -8558,7 +8620,7 @@ dependencies = [
 [[package]]
 name = "selendra-parachain"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "derive_more",
  "frame-support",
@@ -8575,7 +8637,7 @@ dependencies = [
 [[package]]
 name = "selendra-primitives"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "bitvec",
  "frame-system",
@@ -8605,7 +8667,7 @@ dependencies = [
 [[package]]
 name = "selendra-rpc"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "beefy-gadget",
  "beefy-gadget-rpc",
@@ -8645,7 +8707,7 @@ dependencies = [
 [[package]]
 name = "selendra-runtime"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "beefy-primitives",
  "bitvec",
@@ -8739,7 +8801,7 @@ dependencies = [
 [[package]]
 name = "selendra-runtime-common"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "beefy-primitives",
  "bitvec",
@@ -8784,7 +8846,7 @@ dependencies = [
 [[package]]
 name = "selendra-runtime-parachains"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "bitflags",
  "bitvec",
@@ -8823,7 +8885,7 @@ dependencies = [
 [[package]]
 name = "selendra-service"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "async-trait",
  "beefy-gadget",
@@ -8927,7 +8989,7 @@ dependencies = [
 [[package]]
 name = "selendra-statement-distribution"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "arrayvec 0.5.2",
  "derive_more",
@@ -8948,7 +9010,7 @@ dependencies = [
 [[package]]
 name = "selendra-statement-table"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "parity-scale-codec",
  "selendra-primitives",
@@ -9164,7 +9226,7 @@ checksum = "9def91fd1e018fe007022791f865d0ccc9b3a0d5001e01aabb8b40e46000afb5"
 [[package]]
 name = "slot-range-helper"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "enumn",
  "parity-scale-codec",
@@ -11260,7 +11322,7 @@ dependencies = [
 [[package]]
 name = "xcm"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "derivative",
  "impl-trait-for-tuples 0.2.1",
@@ -11273,7 +11335,7 @@ dependencies = [
 [[package]]
 name = "xcm-builder"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -11293,7 +11355,7 @@ dependencies = [
 [[package]]
 name = "xcm-executor"
 version = "0.1.9"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "frame-support",
  "impl-trait-for-tuples 0.2.1",
@@ -11310,7 +11372,7 @@ dependencies = [
 [[package]]
 name = "xcm-procedural"
 version = "0.1.0"
-source = "git+https://github.com/selendra/selendrachain?branch=selendra-cumulus#87c97c731dbc8ec3f8134bcccd4f22391477f929"
+source = "git+https://github.com/selendra/selendrachain?branch=main#ad239a1469b4ef0db74b82d10c3a351f2cd96248"
 dependencies = [
  "proc-macro2",
  "quote",

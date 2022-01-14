@@ -74,19 +74,19 @@ sp-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polk
 sp-transaction-pool = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14" }
 
 # Cumulus dependencies
-cumulus-client-cli = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus' }
-cumulus-client-collator = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus' }
-cumulus-client-consensus-aura = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus' }
-cumulus-client-consensus-common = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus' }
-cumulus-client-network = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus' }
-cumulus-client-service = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus' }
-cumulus-primitives-core = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus' }
-cumulus-primitives-parachain-inherent = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus' }
+cumulus-client-cli = { git = 'https://github.com/selendra/selendrachain', branch = 'main' }
+cumulus-client-collator = { git = 'https://github.com/selendra/selendrachain', branch = 'main' }
+cumulus-client-consensus-aura = { git = 'https://github.com/selendra/selendrachain', branch = 'main' }
+cumulus-client-consensus-common = { git = 'https://github.com/selendra/selendrachain', branch = 'main' }
+cumulus-client-network = { git = 'https://github.com/selendra/selendrachain', branch = 'main' }
+cumulus-client-service = { git = 'https://github.com/selendra/selendrachain', branch = 'main' }
+cumulus-primitives-core = { git = 'https://github.com/selendra/selendrachain', branch = 'main' }
+cumulus-primitives-parachain-inherent = { git = 'https://github.com/selendra/selendrachain', branch = 'main' }
 
 # Selendra dependencies
-selendra-cli = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus" }
-selendra-parachain = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus" }
-selendra-primitives = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus" }
-selendra-service = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus" }
+selendra-cli = { git = "https://github.com/selendra/selendrachain", branch = "main" }
+selendra-parachain = { git = "https://github.com/selendra/selendrachain", branch = "main" }
+selendra-primitives = { git = "https://github.com/selendra/selendrachain", branch = "main" }
+selendra-service = { git = "https://github.com/selendra/selendrachain", branch = "main" }
 
 node-primitives = { path = "../primitive"}

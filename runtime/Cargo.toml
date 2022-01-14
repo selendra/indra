@@ -12,7 +12,7 @@ substrate-wasm-builder = { git = "https://github.com/paritytech/substrate", bran
 
 [dependencies]
 hex-literal = { version = '0.3.1', optional = true }
-codec = { package = "parity-scale-codec", version = "2.0.0", default-features = false, features = ["derive"]}
+codec = { package = "parity-scale-codec", version = "2.3.0", default-features = false, features = ["derive"]}
 log = { version = "0.4.14", default-features = false }
 scale-info = { version = "1.0.0", default-features = false, features = ["derive"] }
 serde = { version = "1.0.119", optional = true, features = ["derive"] }
@@ -41,34 +41,40 @@ frame-system-benchmarking = { git = "https://github.com/paritytech/substrate", b
 frame-system-rpc-runtime-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 
 ## Substrate Pallet Dependencies
+pallet-asset-tx-payment = { git = 'https://github.com/paritytech/substrate', branch = "polkadot-v0.9.14", default-features = false }
+pallet-assets = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 pallet-aura = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 pallet-authorship = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
+pallet-multisig = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
+pallet-proxy = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 pallet-session = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 pallet-sudo = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 pallet-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 pallet-transaction-payment = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
+pallet-uniques = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
+pallet-utility = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.14", default-features = false }
 
 # Selendra Dependencies
-pallet-xcm = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus", default-features = false }
-selendra-parachain = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus", default-features = false }
-selendra-runtime-common = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus", default-features = false }
-xcm = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus", default-features = false  }
-xcm-builder = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus", default-features = false }
-xcm-executor = { git = "https://github.com/selendra/selendrachain", branch = "selendra-cumulus", default-features = false }
+pallet-xcm = { git = "https://github.com/selendra/selendrachain", branch = "main", default-features = false }
+selendra-parachain = { git = "https://github.com/selendra/selendrachain", branch = "main", default-features = false }
+selendra-runtime-common = { git = "https://github.com/selendra/selendrachain", branch = "main", default-features = false }
+xcm = { git = "https://github.com/selendra/selendrachain", branch = "main", default-features = false  }
+xcm-builder = { git = "https://github.com/selendra/selendrachain", branch = "main", default-features = false }
+xcm-executor = { git = "https://github.com/selendra/selendrachain", branch = "main", default-features = false }
 
-cumulus-pallet-aura-ext = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-cumulus-pallet-dmp-queue = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-cumulus-pallet-parachain-system = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-cumulus-pallet-xcm = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-cumulus-pallet-xcmp-queue = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-cumulus-primitives-core = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-cumulus-primitives-timestamp = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-cumulus-primitives-utility = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-pallet-collator-selection = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-parachain-info = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
-cumulus-pallet-session-benchmarking = { git = 'https://github.com/selendra/selendrachain', branch = 'selendra-cumulus', default-features = false }
+cumulus-pallet-aura-ext = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+cumulus-pallet-dmp-queue = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+cumulus-pallet-parachain-system = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+cumulus-pallet-xcm = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+cumulus-pallet-xcmp-queue = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+cumulus-primitives-core = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+cumulus-primitives-timestamp = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+cumulus-primitives-utility = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+pallet-collator-selection = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+parachain-info = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
+cumulus-pallet-session-benchmarking = { git = 'https://github.com/selendra/selendrachain', branch = 'main', default-features = false }
 
 node-primitives = { path = "../primitive", default-features = false }
 
@@ -96,15 +102,21 @@ std = [
 	"frame-executive/std",
 	"frame-support/std",
 	"frame-system/std",
+	"pallet-assets/std",
+	"pallet-asset-tx-payment/std",
 	"pallet-aura/std",
 	"pallet-authorship/std",
 	"pallet-balances/std",
 	"pallet-collator-selection/std",
+	"pallet-multisig/std",
+	"pallet-proxy/std",
 	"pallet-session/std",
 	"pallet-sudo/std",
 	"pallet-timestamp/std",
 	"pallet-transaction-payment-rpc-runtime-api/std",
 	"pallet-transaction-payment/std",
+	"pallet-uniques/std",
+	"pallet-utility/std",
 	"cumulus-pallet-aura-ext/std",
 	"cumulus-pallet-parachain-system/std",
 	"cumulus-pallet-xcm/std",

@@ -14,7 +14,6 @@
 // limitations under the License.
 
 //! Auxillary struct/enums for parachain runtimes.
-//! Taken from polkadot/runtime/common (at a21cd64) and adapted for parachains.
 
 use frame_support::traits::{
 	fungibles::{self, Balanced, CreditOf},
@@ -40,7 +39,7 @@ impl<R> OnUnbalanced<NegativeImbalance<R>> for ToStakingPot<R>
 where
 	R: pallet_balances::Config + pallet_collator_selection::Config,
 	AccountIdOf<R>:
-		From<polkadot_primitives::v1::AccountId> + Into<polkadot_primitives::v1::AccountId>,
+		From<selendra_primitives::v1::AccountId> + Into<selendra_primitives::v1::AccountId>,
 	<R as frame_system::Config>::Event: From<pallet_balances::Event<R>>,
 {
 	fn on_nonzero_unbalanced(amount: NegativeImbalance<R>) {
@@ -61,7 +60,7 @@ impl<R> OnUnbalanced<NegativeImbalance<R>> for DealWithFees<R>
 where
 	R: pallet_balances::Config + pallet_collator_selection::Config,
 	AccountIdOf<R>:
-		From<polkadot_primitives::v1::AccountId> + Into<polkadot_primitives::v1::AccountId>,
+		From<selendra_primitives::v1::AccountId> + Into<selendra_primitives::v1::AccountId>,
 	<R as frame_system::Config>::Event: From<pallet_balances::Event<R>>,
 {
 	fn on_unbalanceds<B>(mut fees_then_tips: impl Iterator<Item = NegativeImbalance<R>>) {
@@ -81,13 +80,12 @@ impl<R> HandleCredit<AccountIdOf<R>, pallet_assets::Pallet<R>> for AssetsToBlock
 where
 	R: pallet_authorship::Config + pallet_assets::Config,
 	AccountIdOf<R>:
-		From<polkadot_primitives::v1::AccountId> + Into<polkadot_primitives::v1::AccountId>,
+		From<selendra_primitives::v1::AccountId> + Into<selendra_primitives::v1::AccountId>,
 {
 	fn handle_credit(credit: CreditOf<AccountIdOf<R>, pallet_assets::Pallet<R>>) {
-		if let Some(author) = pallet_authorship::Pallet::<R>::author() {
-			// In case of error: Will drop the result triggering the `OnDrop` of the imbalance.
-			let _ = pallet_assets::Pallet::<R>::resolve(&author, credit);
-		}
+		let author = pallet_authorship::Pallet::<R>::author();
+		// In case of error: Will drop the result triggering the `OnDrop` of the imbalance.
+		let _ = pallet_assets::Pallet::<R>::resolve(&author, credit);
 	}
 }
 

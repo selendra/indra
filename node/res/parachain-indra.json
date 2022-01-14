@@ -2,7 +2,10 @@
   "name": "Indra Testnet",
   "id": "indra",
   "chainType": "Local",
-  "bootNodes": [],
+  "bootNodes": [
+      "/ip4/164.90.156.111/tcp/30333/p2p/12D3KooWGtzbpfvGP9MkLakBMKgYBQFWXcvyoqKno6rxzAnfuDgd",
+      "/ip4/147.182.195.169/tcp/30333/p2p/12D3KooWRmvejhXKmg4bFUuFazY9PGD5sNFSfeyc4SekKbv86Mbn"
+  ],
   "telemetryEndpoints": null,
   "protocolId": "indra",
   "properties": {

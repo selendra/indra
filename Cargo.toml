@@ -3,6 +3,6 @@ panic = 'unwind'
 
 [workspace]
 members = [
-	'node',
-	'runtime',
+	'indra-parachain/runtime',
+	'indra-parachain/node',
 ]

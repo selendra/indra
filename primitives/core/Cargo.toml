@@ -1,0 +1,36 @@
+[package]
+name = "cumulus-primitives-core"
+version = "0.1.0"
+authors = ["Parity Technologies <admin@parity.io>"]
+edition = "2021"
+
+[dependencies]
+# Substrate dependencies
+sp-std = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15", default-features = false}
+sp-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15", default-features = false}
+sp-runtime = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15", default-features = false}
+sp-trie = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15", default-features = false}
+frame-support = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15", default-features = false}
+
+# Selendra dependencies
+selendra-parachain = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2", default-features = false }
+selendra-primitives = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2", default-features = false}
+selendra-core-primitives = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2", default-features = false }
+
+# Other dependencies
+impl-trait-for-tuples = "0.2.1"
+codec = { package = "parity-scale-codec", version = "2.3.0", default-features = false, features = [ "derive" ] }
+
+[features]
+default = [ "std" ]
+std = [
+	"codec/std",
+	"sp-std/std",
+	"selendra-primitives/std",
+	"selendra-parachain/std",
+	"selendra-core-primitives/std",
+	"sp-runtime/std",
+	"sp-trie/std",
+	"sp-api/std",
+	"frame-support/std",
+]

@@ -1,0 +1,24 @@
+[package]
+name = "cumulus-primitives-timestamp"
+version = "0.1.0"
+authors = ["Parity Technologies <admin@parity.io>"]
+edition = "2021"
+description = "Provides timestamp related functionality for parachains."
+
+[dependencies]
+# Substrate dependencies
+sp-timestamp = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15", default-features = false}
+sp-inherents = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15", default-features = false}
+sp-std = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15", default-features = false}
+
+# Cumulus dependencies
+cumulus-primitives-core = { path = "../core", default-features = false }
+
+[features]
+default = [ "std" ]
+std = [
+	"sp-timestamp/std",
+	"sp-inherents/std",
+	"sp-std/std",
+	"cumulus-primitives-core/std",
+]

@@ -1,0 +1,36 @@
+[package]
+name = "cumulus-client-service"
+version = "0.1.0"
+authors = ["Parity Technologies <admin@parity.io>"]
+edition = "2021"
+
+[dependencies]
+# Cumulus dependencies
+cumulus-client-consensus-common = { path = "../consensus/common" }
+cumulus-client-collator = { path = "../collator" }
+cumulus-client-pov-recovery = { path = "../pov-recovery" }
+cumulus-primitives-core = { path = "../../primitives/core" }
+
+# Substrate dependencies
+sc-chain-spec = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sc-client-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sc-service = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sc-telemetry = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sc-tracing = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sc-consensus-babe = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sc-consensus = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sp-consensus = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sp-runtime = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sp-api = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sp-core = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+sp-blockchain = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
+
+# Selendra dependencies
+selendra-primitives = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2" }
+selendra-service = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2" }
+selendra-overseer = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2" }
+
+# Other deps
+tracing = "0.1.22"
+codec = { package = "parity-scale-codec", version = "2.3.0" }
+parking_lot = "0.10.2"

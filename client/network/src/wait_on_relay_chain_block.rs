@@ -17,11 +17,11 @@
 //! Provides the [`WaitOnRelayChainBlock`] type.
 
 use futures::{future::ready, Future, FutureExt, StreamExt};
-use selendra_primitives::v1::{Block as PBlock, Hash as PHash};
 use sc_client_api::{
 	blockchain::{self, BlockStatus, HeaderBackend},
 	Backend, BlockchainEvents,
 };
+use selendra_primitives::v1::{Block as PBlock, Hash as PHash};
 use sp_runtime::generic::BlockId;
 use std::{sync::Arc, time::Duration};
 

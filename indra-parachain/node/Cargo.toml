@@ -26,10 +26,11 @@ structopt = "0.3.8"
 serde = { version = "1.0.119", features = ["derive"] }
 hex-literal = "0.3.1"
 jsonrpc-core = "18.0.0"
+jsonrpc-pubsub = "18.0.0"
 
 # Local Dependencies
 indra-runtime = { path = "../runtime" }
-parachains-common = { path = "../parachains-common"}
+parachains-common = { path = "../common"}
 
 # Substrate Dependencies
 frame-benchmarking = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.15" }
@@ -87,3 +88,14 @@ selendra-cli = { git = "https://github.com/selendra/selendrachain", branch = "se
 selendra-parachain = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2" }
 selendra-primitives = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2" }
 selendra-service = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2" }
+
+# Frontier dependencies
+fc-consensus = { path = "../../vendors/frontier/client/consensus" }
+fp-consensus = { path = "../../vendors/frontier/primitives/consensus" }
+fc-rpc-core = { path = "../../vendors/frontier/client/rpc-core" }
+fc-rpc = { path = "../../vendors/frontier/client/rpc", features = ["rpc_binary_search_estimate"] }
+fp-rpc = { path = "../../vendors/frontier/primitives/rpc" }
+fc-db = { path = "../../vendors/frontier/client/db" }
+fc-mapping-sync = { path = "../../vendors/frontier/client/mapping-sync" }
+pallet-evm = { path = "../../vendors/frontier/frame/evm" }
+pallet-ethereum = { path = "../../vendors/frontier/frame/ethereum" }

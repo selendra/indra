@@ -20,9 +20,6 @@
 
 use cumulus_client_consensus_common::ParachainConsensus;
 use cumulus_primitives_core::{CollectCollationInfo, ParaId};
-use selendra_overseer::Handle as OverseerHandle;
-use selendra_primitives::v1::{Block as PBlock, CollatorPair};
-use selendra_service::{AbstractClient, Client as PClient, ClientHandle, RuntimeApiCollection};
 use sc_client_api::{
 	Backend as BackendT, BlockBackend, BlockchainEvents, Finalizer, UsageProvider,
 };
@@ -32,6 +29,9 @@ use sc_consensus::{
 };
 use sc_service::{Configuration, Role, TaskManager};
 use sc_telemetry::TelemetryWorkerHandle;
+use selendra_overseer::Handle as OverseerHandle;
+use selendra_primitives::v1::{Block as PBlock, CollatorPair};
+use selendra_service::{AbstractClient, Client as PClient, ClientHandle, RuntimeApiCollection};
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_consensus::BlockOrigin;

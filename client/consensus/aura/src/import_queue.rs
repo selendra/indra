@@ -113,12 +113,11 @@ pub struct BuildVerifierParams<C, CIDP, CAW> {
 
 /// Build the [`AuraVerifier`].
 pub fn build_verifier<P, C, CIDP, CAW>(
-	BuildVerifierParams {
-		client,
-		create_inherent_data_providers,
-		can_author_with,
-		telemetry,
-	}: BuildVerifierParams<C, CIDP, CAW>,
+	BuildVerifierParams { client, create_inherent_data_providers, can_author_with, telemetry }: BuildVerifierParams<
+		C,
+		CIDP,
+		CAW,
+	>,
 ) -> AuraVerifier<C, P, CAW, CIDP> {
 	sc_consensus_aura::build_verifier(sc_consensus_aura::BuildVerifierParams {
 		client,

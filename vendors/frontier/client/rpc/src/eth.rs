@@ -2455,13 +2455,7 @@ where
 					let storage: Vec<Option<StorageData>> = changes
 						.iter()
 						.filter_map(
-							|(o_sk, _k, v)| {
-								if o_sk.is_none() {
-									Some(v.cloned())
-								} else {
-									None
-								}
-							},
+							|(o_sk, _k, v)| if o_sk.is_none() { Some(v.cloned()) } else { None },
 						)
 						.collect();
 					for change in storage {

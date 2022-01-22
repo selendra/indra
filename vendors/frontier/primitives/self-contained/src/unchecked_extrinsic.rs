@@ -115,7 +115,8 @@ impl<Address, Call, Signature, Extra> ExtrinsicMetadata
 where
 	Extra: SignedExtension,
 {
-	const VERSION: u8 = <sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra> as ExtrinsicMetadata>::VERSION;
+	const VERSION: u8 =
+		<sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra> as ExtrinsicMetadata>::VERSION;
 	type SignedExtensions = Extra;
 }
 

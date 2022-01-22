@@ -123,8 +123,7 @@ where
 
 		let mut seal = None;
 		header.digest_mut().logs.retain(|s| {
-			let s =
-				CompatibleDigestItem::<<T::AuthorityId as RuntimeAppPublic>::Signature>::as_aura_seal(s);
+			let s = CompatibleDigestItem::<<T::AuthorityId as RuntimeAppPublic>::Signature>::as_aura_seal(s);
 			match (s, seal.is_some()) {
 				(Some(_), true) => panic!("Found multiple AuRa seal digests"),
 				(None, _) => true,

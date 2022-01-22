@@ -426,13 +426,12 @@ mod tests {
 			_credit: Weight,
 		) -> Outcome {
 			let o = match (message.0.len(), &message.0.first()) {
-				(1, Some(Transact { require_weight_at_most, .. })) => {
+				(1, Some(Transact { require_weight_at_most, .. })) =>
 					if *require_weight_at_most <= weight_limit {
 						Outcome::Complete(*require_weight_at_most)
 					} else {
 						Outcome::Error(XcmError::WeightLimitReached(*require_weight_at_most))
-					}
-				},
+					},
 				// use 1000 to decide that it's not supported.
 				_ => Outcome::Incomplete(1000.min(weight_limit), XcmError::Unimplemented),
 			};

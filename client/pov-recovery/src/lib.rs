@@ -282,7 +282,7 @@ where
 		let parent = *block.header().parent_hash();
 
 		match self.parachain_client.block_status(&BlockId::hash(parent)) {
-			Ok(BlockStatus::Unknown) => {
+			Ok(BlockStatus::Unknown) =>
 				if self.active_candidate_recovery.is_being_recovered(&parent) {
 					tracing::debug!(
 						target: "cumulus-consensus",
@@ -304,8 +304,7 @@ where
 					self.clear_waiting_for_parent(block_hash);
 
 					return
-				}
-			},
+				},
 			Err(error) => {
 				tracing::debug!(
 					target: "cumulus-consensus",

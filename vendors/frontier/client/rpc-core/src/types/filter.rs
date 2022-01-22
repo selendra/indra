@@ -330,11 +330,10 @@ impl FilteredParams {
 		let filter = self.filter.clone().unwrap();
 		if let Some(from) = filter.from_block {
 			match from {
-				BlockNumber::Num(_) => {
+				BlockNumber::Num(_) =>
 					if from.to_min_block_num().unwrap_or(0 as u64) > block_number {
 						out = false;
-					}
-				},
+					},
 				_ => {},
 			}
 		}

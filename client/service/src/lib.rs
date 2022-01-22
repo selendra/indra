@@ -164,13 +164,11 @@ pub struct StartFullNodeParams<'a, Block: BlockT, Client, PClient> {
 /// A full node will only sync the given parachain and will follow the
 /// tip of the chain.
 pub fn start_full_node<Block, Client, Backend, PClient>(
-	StartFullNodeParams {
-		client,
-		announce_block,
-		task_manager,
-		relay_chain_full_node,
-		para_id,
-	}: StartFullNodeParams<Block, Client, PClient>,
+	StartFullNodeParams { client, announce_block, task_manager, relay_chain_full_node, para_id }: StartFullNodeParams<
+		Block,
+		Client,
+		PClient,
+	>,
 ) -> sc_service::error::Result<()>
 where
 	Block: BlockT,

@@ -139,8 +139,7 @@ pub mod pallet {
 				// The base fee is fully decreased (default 12.5%) if the block is lower empty (default 0%).
 				let weight = <frame_system::Pallet<T>>::block_weight();
 				let max_weight =
-					<<T as frame_system::Config>::BlockWeights as frame_support::traits::Get<_>>::get()
-						.max_block;
+					<<T as frame_system::Config>::BlockWeights as frame_support::traits::Get<_>>::get().max_block;
 
 				// We convert `weight` into block fullness and ensure we are within the lower and upper bound.
 				let weight_used =

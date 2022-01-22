@@ -745,31 +745,33 @@ where
 
 /// Implementation for () does not specify what to do with imbalance
 impl<T> OnChargeEVMTransaction<T> for ()
-	where
+where
 	T: Config,
-	<T::Currency as Currency<<T as frame_system::Config>::AccountId>>::PositiveImbalance:
-		Imbalance<<T::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance, Opposite = <T::Currency as Currency<<T as frame_system::Config>::AccountId>>::NegativeImbalance>,
-	<T::Currency as Currency<<T as frame_system::Config>::AccountId>>::NegativeImbalance:
-		Imbalance<<T::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance, Opposite = <T::Currency as Currency<<T as frame_system::Config>::AccountId>>::PositiveImbalance>, {
+	<T::Currency as Currency<<T as frame_system::Config>::AccountId>>::PositiveImbalance: Imbalance<
+		<T::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance,
+		Opposite = <T::Currency as Currency<<T as frame_system::Config>::AccountId>>::NegativeImbalance,
+	>,
+	<T::Currency as Currency<<T as frame_system::Config>::AccountId>>::NegativeImbalance: Imbalance<
+		<T::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance,
+		Opposite = <T::Currency as Currency<<T as frame_system::Config>::AccountId>>::PositiveImbalance,
+	>,
+{
 	// Kept type as Option to satisfy bound of Default
 	type LiquidityInfo = Option<NegativeImbalanceOf<T::Currency, T>>;
 
-	fn withdraw_fee(
-		who: &H160,
-		fee: U256,
-	) -> Result<Self::LiquidityInfo, Error<T>> {
+	fn withdraw_fee(who: &H160, fee: U256) -> Result<Self::LiquidityInfo, Error<T>> {
 		EVMCurrencyAdapter::<<T as Config>::Currency, ()>::withdraw_fee(who, fee)
 	}
 
-	fn correct_and_deposit_fee(
-		who: &H160,
-		corrected_fee: U256,
-		already_withdrawn: Self::LiquidityInfo,
-	) {
-		<EVMCurrencyAdapter::<<T as Config>::Currency, ()> as OnChargeEVMTransaction<T>>::correct_and_deposit_fee(who, corrected_fee, already_withdrawn)
+	fn correct_and_deposit_fee(who: &H160, corrected_fee: U256, already_withdrawn: Self::LiquidityInfo) {
+		<EVMCurrencyAdapter<<T as Config>::Currency, ()> as OnChargeEVMTransaction<T>>::correct_and_deposit_fee(
+			who,
+			corrected_fee,
+			already_withdrawn,
+		)
 	}
 
 	fn pay_priority_fee(tip: U256) {
-		<EVMCurrencyAdapter::<<T as Config>::Currency, ()> as OnChargeEVMTransaction<T>>::pay_priority_fee(tip);
+		<EVMCurrencyAdapter<<T as Config>::Currency, ()> as OnChargeEVMTransaction<T>>::pay_priority_fee(tip);
 	}
 }

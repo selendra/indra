@@ -1,8 +1,6 @@
 use cumulus_primitives_core::ParaId;
 use hex_literal::hex;
-use indra_runtime::{
-	constants::currency::{EXISTENTIAL_DEPOSIT, UNITS},
-};
+use indra_runtime::constants::currency::{EXISTENTIAL_DEPOSIT, UNITS};
 use parachains_common::{AccountId, AuraId, Signature};
 use sc_chain_spec::{ChainSpecExtension, ChainSpecGroup};
 use sc_service::ChainType;
@@ -237,7 +235,7 @@ fn testnet_genesis(
 	id: ParaId,
 ) -> indra_runtime::GenesisConfig {
 	const ENDOWMENT: u128 = 250000 * UNITS;
-	
+
 	indra_runtime::GenesisConfig {
 		system: indra_runtime::SystemConfig {
 			code: indra_runtime::WASM_BINARY

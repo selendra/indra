@@ -41,9 +41,9 @@ use cumulus_primitives_core::{
 	ParaId, PersistedValidationData,
 };
 use parking_lot::Mutex;
-use selendra_client::ClientHandle;
 use sc_client_api::Backend;
 use sc_consensus::{BlockImport, BlockImportParams};
+use selendra_client::ClientHandle;
 use sp_api::ProvideRuntimeApi;
 use sp_consensus::{
 	BlockOrigin, EnableProofRecording, Environment, ProofRecording, Proposal, Proposer,

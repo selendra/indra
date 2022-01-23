@@ -4,8 +4,9 @@ use super::{
 };
 use sp_core::{crypto::Public, H160, U256};
 use sp_runtime::{
-	traits::{Verify, BlakeTwo256}, transaction_validity::TransactionPriority, FixedPointNumber, Permill,
-	Perquintill,
+	traits::{BlakeTwo256, Verify},
+	transaction_validity::TransactionPriority,
+	FixedPointNumber, Permill, Perquintill,
 };
 
 use frame_support::{

@@ -20,9 +20,11 @@ runtime-benchmarks = ["indra-runtime/runtime-benchmarks"]
 
 [dependencies]
 derive_more = "0.99.2"
+async-trait = "0.1.42"
 log = "0.4.14"
 codec = { package = "parity-scale-codec", version = "2.0.0" }
 structopt = "0.3.8"
+futures = { version = "0.3.1", features = ["compat"] }
 serde = { version = "1.0.119", features = ["derive"] }
 hex-literal = "0.3.1"
 jsonrpc-core = "18.0.0"
@@ -82,6 +84,7 @@ cumulus-client-network = { path = "../../client/network" }
 cumulus-client-service = { path = "../../client/service" }
 cumulus-primitives-core = { path = "../../primitives/core" }
 cumulus-primitives-parachain-inherent = { path = "../../primitives/parachain-inherent" }
+cumulus-client-consensus-relay-chain = { path = "../../client/consensus/relay-chain" }
 
 # Selendra dependencies
 selendra-cli = { git = "https://github.com/selendra/selendrachain", branch = "selendrav2" }

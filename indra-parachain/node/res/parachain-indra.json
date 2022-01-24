@@ -2,7 +2,11 @@
   "name": "Indra Testnet",
   "id": "indra",
   "chainType": "Live",
-  "bootNodes": [],
+  "bootNodes": [
+    "/ip4/178.62.118.193/tcp/30333/p2p/12D3KooWBQbFJoiAGkdFoHBLaQGoT9326BppTwojRyNLkUGoauFQ",
+    "/ip4/178.128.100.54/tcp/30333/p2p/12D3KooWGD5RmnAhUEJubVxhVDZMugQAYexeCSKCNQ2WCai3HvQr",
+    "/ip4/165.22.96.205/tcp/30333/p2p/12D3KooWNS1B2Xgm4EM6ixkjx8pMck2kTzTqYpNXJZte2n4HbCNK"
+  ],
   "telemetryEndpoints": null,
   "protocolId": "sel",
   "properties": {

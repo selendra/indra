@@ -18,11 +18,11 @@ RUN cargo build --release $BUILD_ARGS
 
 FROM phusion/baseimage:bionic-1.0.0
 
-LABEL description="Docker image for Indra Parachain" \
+LABEL description="Docker image for Indra Chain" \
 	io.parity.image.type="builder" \
-	io.parity.image.authors="nath@selendra.org" \
+	io.parity.image.authors="nath.@selendra.org" \
 	io.parity.image.vendor="Selendra" \
-	io.parity.image.description="Selendra: indra parachain" \
+	io.parity.image.description="Selendra: Indra chain" \
 	io.parity.image.source="https://github.com/selendra/indra/blob/${VCS_REF}/docker/Dockerfile" \
 	io.parity.image.documentation="https://github.com/selendra/indra"
 

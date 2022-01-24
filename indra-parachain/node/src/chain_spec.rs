@@ -181,7 +181,7 @@ pub fn indra_config() -> ChainSpec {
 		"Indra Testnet",
 		// ID
 		"indra",
-		ChainType::Local,
+		ChainType::Live,
 		move || {
 			testnet_genesis(
 				// initial collators.
@@ -196,6 +196,12 @@ pub fn indra_config() -> ChainSpec {
 						hex!("dca5d29a84f0aaa2bc623f9f11d7f21cafa3b2e358bee3a950ae121fd58b8f31")
 							.into(),
 						hex!("dca5d29a84f0aaa2bc623f9f11d7f21cafa3b2e358bee3a950ae121fd58b8f31")
+							.unchecked_into(),
+					),
+					(
+						hex!("3c7bb743843eea4d4fdb2621bcc2d66fb1b2844fc1fd8ad0ed8faf1840894e26")
+							.into(),
+						hex!("3c7bb743843eea4d4fdb2621bcc2d66fb1b2844fc1fd8ad0ed8faf1840894e26")
 							.unchecked_into(),
 					),
 				],

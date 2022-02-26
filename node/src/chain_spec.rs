@@ -404,9 +404,9 @@ pub fn indranet_config() -> IndranetChainSpec {
 							.unchecked_into(),
 					),
 					(
-						hex!("77b08b89c98682e9478f2638247b35896cb6cdf107852c429ef57e6da0a5b4ae")
+						hex!("c824993c8b7bbd6956b2fb4e7a884faa82b58699008aa9dc5708e7086798410b")
 							.into(),
-						hex!("77b08b89c98682e9478f2638247b35896cb6cdf107852c429ef57e6da0a5b4ae")
+						hex!("c824993c8b7bbd6956b2fb4e7a884faa82b58699008aa9dc5708e7086798410b")
 							.unchecked_into(),
 					),
 				],
@@ -428,7 +428,7 @@ fn indranet_genesis(
 	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
 ) -> indranet_runtime::GenesisConfig {
-	let root_key = hex!("77b08b89c98682e9478f2638247b35896cb6cdf107852c429ef57e6da0a5b4ae").into();
+	let root_key = hex!("c824993c8b7bbd6956b2fb4e7a884faa82b58699008aa9dc5708e7086798410b").into();
 	indranet_runtime::GenesisConfig {
 		system: indranet_runtime::SystemConfig {
 			code: indranet_runtime::WASM_BINARY

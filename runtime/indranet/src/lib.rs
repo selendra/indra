@@ -444,7 +444,7 @@ impl pallet_studentid::Config for Runtime {
 }
 
 parameter_types! {
-	pub const BaseDeposit: Balance = 10 * DOLLARS;       // 258 bytes on-chain
+	pub const BaseDeposit: Balance = 10 * UNITS;       // 258 bytes on-chain
 	pub const MaxPublishing: u32 = 100;
 	pub const MaximumNameLength: u32 = 100;
 	pub const MaximumContractLength: u32 = 256;

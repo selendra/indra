@@ -1,0 +1,11 @@
+[workspace]
+members = [
+	"node",
+	"runtime/indracore",
+	"runtime/indranet",
+]
+
+[profile.release]
+# Selendra runtime requires unwinding.
+panic = "unwind"
+opt-level = 3

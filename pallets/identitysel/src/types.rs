@@ -15,7 +15,6 @@ use scale_info::{
 use sp_runtime::{traits::Zero, RuntimeDebug};
 use sp_std::{fmt::Debug, iter::once, ops::Add, prelude::*};
 
-
 /// Either underlying data blob if it is at most 32 bytes, or a hash of it. If the data is greater
 /// than 32-bytes then it will be truncated when encoding.
 ///
@@ -39,8 +38,6 @@ pub enum Data {
 	/// through some hash-lookup service.
 	ShaThree256([u8; 32]),
 }
-
-
 
 impl Decode for Data {
 	fn decode<I: codec::Input>(input: &mut I) -> sp_std::result::Result<Self, codec::Error> {
@@ -163,10 +160,8 @@ impl Default for Data {
 	}
 }
 
-
 /// An identifier for a single name registrar/identity verification service.
 pub type RegistrarIndex = u32;
-
 
 /// The fields that we use to identify the owner of an account with. Each corresponds to a field
 /// in the `IdentityInfo` struct.
@@ -215,8 +210,6 @@ impl TypeInfo for IdentityFields {
 			.composite(Fields::unnamed().field(|f| f.ty::<u64>().type_name("IdentityField")))
 	}
 }
-
-
 
 #[derive(
 	CloneNoBound, Encode, Decode, Eq, MaxEncodedLen, PartialEqNoBound, RuntimeDebugNoBound, TypeInfo,
@@ -272,8 +265,6 @@ pub struct IdentityInfoSel<FieldLimit: Get<u32>> {
 	pub passwordhash: Data,
 }
 
-
-
 /// NOTE: This is stored separately primarily to facilitate the addition of extra fields in a
 /// backwards compatible way through a specialized `Decode` impl.
 #[derive(
@@ -284,52 +275,46 @@ pub struct IdentityInfoSel<FieldLimit: Get<u32>> {
 	AccountId: Encode + Decode + MaxEncodedLen +  Clone + Debug + Eq + PartialEq ,
 	MaxAdditionalFields: Get<u32>,
 ))]
-#[scale_info(skip_type_params( MaxAdditionalFields))]
+#[scale_info(skip_type_params(MaxAdditionalFields))]
 pub struct RegistrationSel<
 	Balance: Encode + Decode + MaxEncodedLen + Copy + Clone + Debug + Eq + PartialEq,
 	AccountId: Encode + Decode + MaxEncodedLen + Clone + Debug + Eq + PartialEq,
 	MaxAdditionalFields: Get<u32>,
 > {
-
 	/// Amount held on deposit for this information.
 	pub deposit: Balance,
 
-
 	pub accountId: AccountId,
-    
-	// Public-key of user  
-	//pub account: AccountId,
 
+	// Public-key of user
+	//pub account: AccountId,
 	/// Information on the identity.
 	pub info: IdentityInfoSel<MaxAdditionalFields>,
 }
 
-
 impl<
 		Balance: Encode + Decode + MaxEncodedLen + Copy + Clone + Debug + Eq + PartialEq + Zero + Add,
-		AccountId: Encode + Decode + MaxEncodedLen + Clone + Debug + Eq + PartialEq ,
+		AccountId: Encode + Decode + MaxEncodedLen + Clone + Debug + Eq + PartialEq,
 		MaxAdditionalFields: Get<u32>,
-	> RegistrationSel<Balance, AccountId,    MaxAdditionalFields>
+	> RegistrationSel<Balance, AccountId, MaxAdditionalFields>
 {
 	#[allow(dead_code)]
 	pub(crate) fn total_deposit(&self) -> Balance {
-		self.deposit 
+		self.deposit
 	}
 }
 
 impl<
 		Balance: Encode + Decode + MaxEncodedLen + Copy + Clone + Debug + Eq + PartialEq,
-		AccountId: Encode + Decode + MaxEncodedLen + Clone + Debug + Eq + PartialEq ,
+		AccountId: Encode + Decode + MaxEncodedLen + Clone + Debug + Eq + PartialEq,
 		MaxAdditionalFields: Get<u32>,
-	> Decode for RegistrationSel<Balance, AccountId,    MaxAdditionalFields>
+	> Decode for RegistrationSel<Balance, AccountId, MaxAdditionalFields>
 {
 	fn decode<I: codec::Input>(input: &mut I) -> sp_std::result::Result<Self, codec::Error> {
-		let ( deposit, accountId, info) = Decode::decode(&mut AppendZerosInput::new(input))?;
-		Ok(Self {  deposit, accountId, info })
+		let (deposit, accountId, info) = Decode::decode(&mut AppendZerosInput::new(input))?;
+		Ok(Self { deposit, accountId, info })
 	}
 }
-
-
 
 #[cfg(test)]
 mod tests {

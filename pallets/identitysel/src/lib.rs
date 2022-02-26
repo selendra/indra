@@ -29,19 +29,20 @@ mod types;
 
 use codec::{Decode, Encode, MaxEncodedLen};
 
-use sp_io::hashing::{sha2_256, blake2_256};
+use sp_io::hashing::{blake2_256, sha2_256};
 
 use frame_support::traits::{Currency, OnUnbalanced, ReservableCurrency};
-use sp_runtime::traits::{AppendZerosInput, Zero};
-use sp_runtime::RuntimeDebug;
+use sp_runtime::{
+	traits::{AppendZerosInput, Zero},
+	RuntimeDebug,
+};
 
-use sp_std::prelude::*;
 use scale_info::TypeInfo;
+use sp_std::prelude::*;
 
 pub use pallet::*;
 pub use types::{
-	Data, IdentityField, IdentityFields,  IdentityInfoSel,  RegistrarIndex, 
-	 RegistrationSel
+	Data, IdentityField, IdentityFields, IdentityInfoSel, RegistrarIndex, RegistrationSel,
 };
 
 type BalanceOf<T> =
@@ -121,26 +122,19 @@ pub mod pallet {
 
 		/// The origin which may add or remove registrars. Root can always do this.
 		type RegistrarOrigin: EnsureOrigin<Self::Origin>;
-
-
-
 	}
 
+	pub type TokenId<T> = BoundedVec<u8, <T as Config>::MaxTokenid>;
 
-
-
-    pub type TokenId<T> = BoundedVec<u8, <T as Config>::MaxTokenid> ;
-
-    pub type Email<T> =  BoundedVec<u8, <T as  Config>::MaxEmailsize>;
+	pub type Email<T> = BoundedVec<u8, <T as Config>::MaxEmailsize>;
 
 	pub type TokenMetadataOf<T> = BoundedVec<u8, <T as Config>::MaxAccessTokenMetadata>;
 	pub type TokenInfoOf<T> =
-		TokenInfo<<T as frame_system::Config>::AccountId,  Data, TokenMetadataOf<T>>;
-
+		TokenInfo<<T as frame_system::Config>::AccountId, Data, TokenMetadataOf<T>>;
 
 	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
-    #[pallet::without_storage_info]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
 	/// testing
@@ -148,16 +142,13 @@ pub mod pallet {
 	/// Returns `None` if token info not set or removed.
 	#[pallet::storage]
 	#[pallet::getter(fn tokens)]
-	pub type Tokens<T: Config> =
-		StorageMap<_, Twox64Concat,  TokenId<T>, TokenInfoOf<T>>;
+	pub type Tokens<T: Config> = StorageMap<_, Twox64Concat, TokenId<T>, TokenInfoOf<T>>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn emailid)]
-	pub type EmailId<T: Config> =
-		StorageMap<_, Twox64Concat,  T::AccountId, Email<T>>;
+	pub type EmailId<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, Email<T>>;
 
-
-    /// Information that is pertinent to identify the entity behind an account.
+	/// Information that is pertinent to identify the entity behind an account.
 	///
 	/// TWOX-NOTE: OK ― `AccountId` is a secure hash.
 	#[pallet::storage]
@@ -169,37 +160,30 @@ pub mod pallet {
 		RegistrationSel<BalanceOf<T>, T::AccountId, T::MaxAdditionalFields>,
 		OptionQuery,
 	>;
-    
 
 	#[pallet::storage]
 	#[pallet::getter(fn identity1)]
 	pub(super) type StudentidOf<T: Config> = StorageMap<
 		_,
 		Twox64Concat,
-		BoundedVec<u8, T::MaxEmailsize> ,
-		RegistrationSel<BalanceOf<T>, T::AccountId,  T::MaxAdditionalFields>,
+		BoundedVec<u8, T::MaxEmailsize>,
+		RegistrationSel<BalanceOf<T>, T::AccountId, T::MaxAdditionalFields>,
 		OptionQuery,
 	>;
 
-
-
-
-
-
 	#[pallet::error]
 	pub enum Error<T> {
+		IdentityAlreadyClaimed,
 
-        IdentityAlreadyClaimed,
+		SignerNotmatching,
 
-        SignerNotmatching,
+		ReferalFailed,
 
-        ReferalFailed,
+		LoginFailed,
 
-        LoginFailed,
+		MaxMetadataExceeded,
 
-        MaxMetadataExceeded,
-
-        ServiceAccessFailed,
+		ServiceAccessFailed,
 
 		/// Too many subs-accounts.
 		TooManySubAccounts,
@@ -229,41 +213,77 @@ pub mod pallet {
 	// #[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
 		/// A name was set or reset (which will remove all judgements).
-		UserRegistered { who: Vec<u8>      },
-		UserExists { who: Vec<u8>      },
-		UserInvalid { who: Vec<u8>      },
-		UserRegisterfailed { who: Vec<u8>      },
+		UserRegistered {
+			who: Vec<u8>,
+		},
+		UserExists {
+			who: Vec<u8>,
+		},
+		UserInvalid {
+			who: Vec<u8>,
+		},
+		UserRegisterfailed {
+			who: Vec<u8>,
+		},
 
-		UserWeb3registered { who: Vec<u8>      },
-		UserWeb3registerfailed { who: Vec<u8>      },
+		UserWeb3registered {
+			who: Vec<u8>,
+		},
+		UserWeb3registerfailed {
+			who: Vec<u8>,
+		},
 
-		UserLoginsuccess { who: Vec<u8>, blocksession: Vec<u8>      },
-		UserLoginfailed { who: Vec<u8>      },
-		UserDoesnotexist { who: Vec<u8>      },
+		UserLoginsuccess {
+			who: Vec<u8>,
+			blocksession: Vec<u8>,
+		},
+		UserLoginfailed {
+			who: Vec<u8>,
+		},
+		UserDoesnotexist {
+			who: Vec<u8>,
+		},
 
-		UserWeb3loginsuccess { who: Vec<u8>, blocksession: Vec<u8>      },
-		UserWeb3loginfailed { who: Vec<u8>      },
-		UserWeb3doesnotexist { who: Vec<u8>      },
+		UserWeb3loginsuccess {
+			who: Vec<u8>,
+			blocksession: Vec<u8>,
+		},
+		UserWeb3loginfailed {
+			who: Vec<u8>,
+		},
+		UserWeb3doesnotexist {
+			who: Vec<u8>,
+		},
 
-		IdentitySet { who: T::AccountId },
+		IdentitySet {
+			who: T::AccountId,
+		},
 		/// A name was cleared, and the given balance returned.
-		IdentityCleared { who: T::AccountId, deposit: BalanceOf<T> },
+		IdentityCleared {
+			who: T::AccountId,
+			deposit: BalanceOf<T>,
+		},
 		/// A name was removed and the given balance slashed.
-		IdentityKilled { who: T::AccountId, deposit: BalanceOf<T> },
-        
+		IdentityKilled {
+			who: T::AccountId,
+			deposit: BalanceOf<T>,
+		},
+
 		/// A useridentity was added.
-		UseridentityAdded { useridentity_index: UseridentityIndex },
+		UseridentityAdded {
+			useridentity_index: UseridentityIndex,
+		},
 
 		/// A registrar was added.
-		RegistrarAdded { registrar_index: RegistrarIndex },
+		RegistrarAdded {
+			registrar_index: RegistrarIndex,
+		},
 	}
 
 	#[pallet::call]
 	/// Identity pallet declaration.
 	impl<T: Config> Pallet<T> {
-
-
-        #[pallet::weight(1_000)]
+		#[pallet::weight(1_000)]
 		pub fn request_registration_sel11(
 			origin: OriginFor<T>,
 			email: Vec<u8>,
@@ -271,55 +291,44 @@ pub mod pallet {
 		) -> DispatchResult {
 			let sender = ensure_signed(origin)?;
 
-            let emailx : BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
-        
-            ensure!(!StudentidOf::<T>::contains_key(&emailx), Error::<T>::IdentityAlreadyClaimed);
+			let emailx: BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
 
+			ensure!(!StudentidOf::<T>::contains_key(&emailx), Error::<T>::IdentityAlreadyClaimed);
 
+			let add: BoundedVec<_, T::MaxAdditionalFields> = vec![
+				(
+					Data::Raw(b"number".to_vec().try_into().unwrap()),
+					Data::Raw(10u32.encode().try_into().unwrap()),
+				),
+				(
+					Data::Raw(b"text".to_vec().try_into().unwrap()),
+					Data::Raw(b"10".to_vec().try_into().unwrap()),
+				),
+			]
+			.try_into()
+			.unwrap();
 
-            let add: BoundedVec<_, T::MaxAdditionalFields> = vec![
-                    (
-                        Data::Raw(b"number".to_vec().try_into().unwrap()),
-                        Data::Raw(10u32.encode().try_into().unwrap())
-                    ),
-                    (
-                        Data::Raw(b"text".to_vec().try_into().unwrap()),
-                        Data::Raw(b"10".to_vec().try_into().unwrap())
-                    ),
-                ]
-                .try_into()
-                .unwrap();
+			let info = IdentityInfoSel {
+				display: Data::Raw(b"ten".to_vec().try_into().unwrap()),
+				legal: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
+				image: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
+				web: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
+				referalhash: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
+				email: Data::Raw(email.clone().try_into().unwrap()),
+				passwordhash: Data::BlakeTwo256(blake2_256(&password.clone())),
+				pgp_fingerprint: None,
+				account: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
+				additional: add,
+			};
 
+			let reg = RegistrationSel { accountId: sender, info, deposit: Zero::zero() };
 
-        let info =  IdentityInfoSel {
-        display: Data::Raw(b"ten".to_vec().try_into().unwrap()),
-        legal: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
-        image: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
-        web: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
-        referalhash: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
-        email: Data::Raw(email.clone().try_into().unwrap()),
-        passwordhash: Data::BlakeTwo256(blake2_256(&password.clone())),
-        pgp_fingerprint: None,
-        account: Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap()),
-        additional: add
-        };
-
-
-        let reg = RegistrationSel {
-                    accountId:sender, 
-                    info: info,
-                    deposit: Zero::zero(),
-        };
-
-            
 			<StudentidOf<T>>::insert(emailx, reg);
 
 			Ok(())
 		}
 
-
-
-        #[pallet::weight(1_000)]
+		#[pallet::weight(1_000)]
 		pub fn login_access_sel12(
 			origin: OriginFor<T>,
 			email: Vec<u8>,
@@ -327,211 +336,169 @@ pub mod pallet {
 		) -> DispatchResult {
 			let _sender = ensure_signed(origin)?;
 
-            let emailx : BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
+			let emailx: BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
 
 			let id = <StudentidOf<T>>::get(&emailx).ok_or(Error::<T>::NoIdentity)?;
 
-            let info = id.info;
-        
+			let info = id.info;
 
-            let passtocheck = Data::BlakeTwo256(blake2_256(&password.clone()));
+			let passtocheck = Data::BlakeTwo256(blake2_256(&password.clone()));
 
-            ensure!(info.passwordhash == passtocheck , Error::<T>::LoginFailed);
+			ensure!(info.passwordhash == passtocheck, Error::<T>::LoginFailed);
 			Ok(())
 		}
 
-
-        #[pallet::weight(1_000)]
+		#[pallet::weight(1_000)]
 		pub fn change_password_sel13(
 			origin: OriginFor<T>,
 			email: Vec<u8>,
 			password: Vec<u8>,
 		) -> DispatchResult {
-
 			let sender = ensure_signed(origin)?;
 
-            let emailx : BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
+			let emailx: BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
 
 			let id = <StudentidOf<T>>::get(&emailx).ok_or(Error::<T>::NoIdentity)?;
 
-            let mut info = id.info;
+			let mut info = id.info;
 
-            let newpassword = Data::BlakeTwo256(blake2_256(&password.clone()));
+			let newpassword = Data::BlakeTwo256(blake2_256(&password.clone()));
 
-            info.passwordhash  = newpassword;
-            info.account  =  Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap());
+			info.passwordhash = newpassword;
+			info.account = Data::Raw(b"The Right Ordinal Ten, Esq.".to_vec().try_into().unwrap());
 
-            let reg = RegistrationSel {
-                    accountId: sender,
-                    info: info,
-                    deposit: Zero::zero(),
+			let reg = RegistrationSel { accountId: sender, info, deposit: Zero::zero() };
 
-            };
-
-            
 			<StudentidOf<T>>::insert(emailx, reg);
 
 			Ok(())
 		}
 
-        #[pallet::weight(1_000)]
+		#[pallet::weight(1_000)]
 		pub fn set_referal_sel12(
 			origin: OriginFor<T>,
 			email: Vec<u8>,
 			referal: Vec<u8>,
 		) -> DispatchResult {
-            
 			let sender = ensure_signed(origin)?;
 
-            let emailx : BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
+			let emailx: BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
 
 			let id = <StudentidOf<T>>::get(&emailx).ok_or(Error::<T>::NoIdentity)?;
 
-            let hashtoset = Data::Sha256(sha2_256(&referal.clone()));
+			let hashtoset = Data::Sha256(sha2_256(&referal.clone()));
 
-            let mut info = id.info;
+			let mut info = id.info;
 
-            info.referalhash  =  hashtoset;
+			info.referalhash = hashtoset;
 
+			let reg = RegistrationSel { accountId: sender, info, deposit: Zero::zero() };
 
-            let reg = RegistrationSel {
-                    accountId: sender,
-                    info: info,
-                    deposit: Zero::zero(),
-            };
-
-            
 			<StudentidOf<T>>::insert(emailx, reg);
 
 			Ok(())
 		}
 
-
-        #[pallet::weight(1_000)]
+		#[pallet::weight(1_000)]
 		pub fn create_web3link_sel15(
 			origin: OriginFor<T>,
 			email: Vec<u8>,
 			idtolink: T::AccountId,
 			referal: Vec<u8>,
 		) -> DispatchResult {
-            // We check if the signer is same as in email-id
-            // Then update account-id of that record
-            // That user would have received referal key, onlythen he can link 
-            // After use referal is removed
-            // No more linking possible     
-            // We check if the person signing is same as origin
-            
+			// We check if the signer is same as in email-id
+			// Then update account-id of that record
+			// That user would have received referal key, onlythen he can link
+			// After use referal is removed
+			// No more linking possible
+			// We check if the person signing is same as origin
+
 			let sender = ensure_signed(origin)?;
 
-            ensure!(sender == idtolink , Error::<T>::SignerNotmatching);
+			ensure!(sender == idtolink, Error::<T>::SignerNotmatching);
 
-            let emailx : BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
+			let emailx: BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
 
 			let id = <StudentidOf<T>>::get(&emailx).ok_or(Error::<T>::NoIdentity)?;
 
-            let hashtocheck = Data::Sha256(sha2_256(&referal.clone()));
+			let hashtocheck = Data::Sha256(sha2_256(&referal.clone()));
 
-            let mut info = id.info;
+			let mut info = id.info;
 
-            ensure!(info.referalhash == hashtocheck , Error::<T>::ReferalFailed);
+			ensure!(info.referalhash == hashtocheck, Error::<T>::ReferalFailed);
 
+			// Remove referal
+			info.referalhash = Data::Raw(b"null".to_vec().try_into().unwrap());
 
-            // Remove referal 
-            info.referalhash  =  Data::Raw(b"null".to_vec().try_into().unwrap());
+			let reg = RegistrationSel { accountId: sender.clone(), info, deposit: Zero::zero() };
 
-
-            let reg = RegistrationSel {
-                    accountId: sender.clone(),
-                    info: info,
-                    deposit: Zero::zero(),
-            };
-
-            
 			<StudentidOf<T>>::insert(emailx.clone(), reg);
-            <EmailId<T>>::insert(sender, emailx);
+			<EmailId<T>>::insert(sender, emailx);
 
 			Ok(())
 		}
 
-        #[pallet::weight(1_000)]
-		pub fn login_web3_sel16(
-			origin: OriginFor<T>,
-			email: Vec<u8>,
-		) -> DispatchResult{
-            // let key = Origin::signed(1);
-            
+		#[pallet::weight(1_000)]
+		pub fn login_web3_sel16(origin: OriginFor<T>, email: Vec<u8>) -> DispatchResult {
+			// let key = Origin::signed(1);
+
 			let sender = ensure_signed(origin)?;
 
-
-            let emailx : BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
+			let emailx: BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
 
 			let id = <StudentidOf<T>>::get(&emailx).ok_or(Error::<T>::NoIdentity)?;
-            ensure!(sender == id.accountId , Error::<T>::LoginFailed);
+			ensure!(sender == id.accountId, Error::<T>::LoginFailed);
 
-            let _tokenid : TokenId<T> =   email.clone().try_into().unwrap();
-
+			let _tokenid: TokenId<T> = email.clone().try_into().unwrap();
 
 			Ok(())
 		}
 
-
-        #[pallet::weight(1_000)]
-        pub fn set_accessservice_sel17(
-            origin: OriginFor<T>,
+		#[pallet::weight(1_000)]
+		pub fn set_accessservice_sel17(
+			origin: OriginFor<T>,
 			idtoaccess: T::AccountId,
-            service: Vec<u8>,
-        ) -> DispatchResult {
+			service: Vec<u8>,
+		) -> DispatchResult {
+			let _sender = ensure_signed(origin)?;
 
-            let _sender = ensure_signed(origin)?;
+			let email = <EmailId<T>>::get(idtoaccess.clone()).ok_or(Error::<T>::NoIdentity)?;
 
-            let email = <EmailId<T>>::get(idtoaccess.clone()).ok_or(Error::<T>::NoIdentity)?;
+			let emailx: BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
 
-            let emailx : BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
+			let id = <StudentidOf<T>>::get(&emailx).ok_or(Error::<T>::NoIdentity)?;
 
-            let id = <StudentidOf<T>>::get(&emailx).ok_or(Error::<T>::NoIdentity)?;
+			let web = Data::Raw(service.try_into().unwrap());
 
-            let web = Data::Raw(service.try_into().unwrap());
+			let mut info = id.info;
 
-            let mut info = id.info;
+			info.web = web;
 
-            info.web  =  web;
+			let reg = RegistrationSel { accountId: id.accountId, info, deposit: Zero::zero() };
 
+			<StudentidOf<T>>::insert(emailx, reg);
 
-            let reg = RegistrationSel {
-                    accountId: id.accountId,
-                    info: info,
-                    deposit: Zero::zero(),
-            };
+			Ok(())
+		}
 
+		#[pallet::weight(1_000)]
+		pub fn check_web3access_sel18(origin: OriginFor<T>, service: Vec<u8>) -> DispatchResult {
+			// let key = Origin::signed(1);
 
-            <StudentidOf<T>>::insert(emailx, reg);
+			let sender = ensure_signed(origin)?;
 
-            Ok(())
-        }
+			let email = <EmailId<T>>::get(sender.clone()).ok_or(Error::<T>::NoIdentity)?;
 
-        #[pallet::weight(1_000)]
-        pub fn check_web3access_sel18(
-            origin: OriginFor<T>,
-            service: Vec<u8>,
-        ) -> DispatchResult{
-            // let key = Origin::signed(1);
+			let emailx: BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
 
-            let sender = ensure_signed(origin)?;
+			let id = <StudentidOf<T>>::get(&emailx).ok_or(Error::<T>::NoIdentity)?;
 
-            let email = <EmailId<T>>::get(sender.clone()).ok_or(Error::<T>::NoIdentity)?;
+			let servicetocheck = Data::Raw(service.try_into().unwrap());
+			let info = id.info;
 
-            let emailx : BoundedVec<_, T::MaxEmailsize> = email.clone().try_into().unwrap();
+			ensure!(servicetocheck == info.web, Error::<T>::ServiceAccessFailed);
 
-            let id = <StudentidOf<T>>::get(&emailx).ok_or(Error::<T>::NoIdentity)?;
-          
-            let servicetocheck = Data::Raw(service.try_into().unwrap());
-            let info = id.info;
-            
-            ensure!(servicetocheck == info.web , Error::<T>::ServiceAccessFailed);
-
-            Ok(())
-        }
-
-    }
+			Ok(())
+		}
+	}
 }
-

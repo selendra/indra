@@ -1,22 +1,23 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub mod weights;
 mod tests;
+pub mod weights;
 
-pub use pallet::*;
-use sp_std::prelude::*;
 use frame_support::pallet_prelude::*;
 use frame_system::pallet_prelude::*;
+pub use pallet::*;
+use sp_std::prelude::*;
 
-use scale_info::TypeInfo;
-use sp_runtime::{
-	DispatchResult, RuntimeDebug, traits::Zero,
-};
-use frame_support::traits::{Currency, ReservableCurrency, OnUnbalanced, ExistenceRequirement::KeepAlive};
-use weights::WeightInfo;
 use codec::{Decode, Encode, MaxEncodedLen};
+use frame_support::traits::{
+	Currency, ExistenceRequirement::KeepAlive, OnUnbalanced, ReservableCurrency,
+};
+use scale_info::TypeInfo;
+use sp_runtime::{traits::Zero, DispatchResult, RuntimeDebug};
+use weights::WeightInfo;
 
-type BalanceOf<T> = <<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
+type BalanceOf<T> =
+	<<T as Config>::Currency as Currency<<T as frame_system::Config>::AccountId>>::Balance;
 type NegativeImbalanceOf<T> = <<T as Config>::Currency as Currency<
 	<T as frame_system::Config>::AccountId,
 >>::NegativeImbalance;
@@ -29,21 +30,22 @@ pub type ServiceIndex = u32;
 // #[cfg_attr(test, derive(frame_support::DefaultNoBound))]
 #[derive(Encode, Decode, Clone, PartialEq, Eq, TypeInfo, MaxEncodedLen, RuntimeDebug)]
 #[scale_info(skip_type_params(MaximumNameLength, MaximumContractLength))]
-pub struct Service<AccountId, Balance, MaximumNameLength: Get<u32>, MaximumContractLength: Get<u32>> {
-  /// The account publishing it.
+pub struct Service<AccountId, Balance, MaximumNameLength: Get<u32>, MaximumContractLength: Get<u32>>
+{
+	/// The account publishing it.
 	publisher: AccountId,
-  /// The name of this service
-  name: BoundedVec<u8, MaximumNameLength>,
-  /// The (total) amount that should be paid to publisher once subscribe to it
+	/// The name of this service
+	name: BoundedVec<u8, MaximumNameLength>,
+	/// The (total) amount that should be paid to publisher once subscribe to it
 	cost: Balance,
-  /// The amount held on deposit (reserved) for making this proposal.
+	/// The amount held on deposit (reserved) for making this proposal.
 	bond: Balance,
-  /// The link to contract 
-  contract: BoundedVec<u8, MaximumContractLength>,
-  /// If the service is periodic, then this points to the information concerning that.
+	/// The link to contract
+	contract: BoundedVec<u8, MaximumContractLength>,
+	/// If the service is periodic, then this points to the information concerning that.
 	maybe_periodic: Option<u32>,
-  /// The status of this service.
-  status: ServiceStatus,
+	/// The status of this service.
+	status: ServiceStatus,
 }
 
 // impl<AccountId: PartialEq + Clone + Ord, Balance, BlockNumber: Clone>
@@ -58,150 +60,154 @@ pub struct Service<AccountId, Balance, MaximumNameLength: Get<u32>, MaximumContr
 /// The status of a subscription service.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 pub enum ServiceStatus {
-  Published,
-  Unpublished,
+	Published,
+	Unpublished,
 }
 
 /// A subscription info.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 pub struct Subscription<BlockNumber> {
-  /// subscription on block
+	/// subscription on block
 	start_on: BlockNumber,
-  /// subscription expire on block
+	/// subscription expire on block
 	expire_on: Option<BlockNumber>,
-  /// The status of this service.
-  active: bool,
+	/// The status of this service.
+	active: bool,
 }
 
 /// The status of a publisher.
 #[derive(Encode, Decode, Clone, PartialEq, Eq, RuntimeDebug, TypeInfo, MaxEncodedLen)]
 pub enum PublisherStatus {
-  /// The publisher is requested and waiting for approval.
-  Requested,
-  /// The publisher is approved
-  Approved,
+	/// The publisher is requested and waiting for approval.
+	Requested,
+	/// The publisher is approved
+	Approved,
 }
 
 #[frame_support::pallet]
 pub mod pallet {
-  use super::*;
+	use super::*;
 
-  #[pallet::pallet]
+	#[pallet::pallet]
 	#[pallet::generate_store(pub(super) trait Store)]
-  #[pallet::without_storage_info]
+	#[pallet::without_storage_info]
 	pub struct Pallet<T>(_);
 
-  /// Configure the pallet by specifying the parameters and types on which it depends.
+	/// Configure the pallet by specifying the parameters and types on which it depends.
 	#[pallet::config]
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type Event: From<Event<Self>> + IsType<<Self as frame_system::Config>::Event>;
 
-    /// The currency trait.
+		/// The currency trait.
 		type Currency: Currency<Self::AccountId> + ReservableCurrency<Self::AccountId>;
 
-    /// The amount held on deposit for a publish service
+		/// The amount held on deposit for a publish service
 		#[pallet::constant]
 		type BaseDeposit: Get<BalanceOf<Self>>;
 
-    /// The amount held on deposit per byte within the tip report reason or bounty description.
+		/// The amount held on deposit per byte within the tip report reason or bounty description.
 		#[pallet::constant]
 		type DataDepositPerByte: Get<BalanceOf<Self>>;
 
-    // /// The amount held on deposit per additional field for a publish service.
+		// /// The amount held on deposit per additional field for a publish service.
 		// #[pallet::constant]
 		// type FieldDeposit: Get<BalanceOf<Self>>;
 
-    // /// Maximum number of additional fields that may be stored in an ID. Needed to bound the I/O
+		// /// Maximum number of additional fields that may be stored in an ID. Needed to bound the I/O
 		// /// required to access an identity, but can be pretty high.
 		// #[pallet::constant]
 		// type MaxAdditionalFields: Get<u32>;
 
-    /// Maxmimum number of registrars allowed in the system. Needed to bound the complexity
+		/// Maxmimum number of registrars allowed in the system. Needed to bound the complexity
 		/// of, e.g., updating judgements.
 		// #[pallet::constant]
 		// type MaxPublisher: Get<u32>;
 
-    /// The maximum amount of publishing per publisher.
-    #[pallet::constant]
-    type MaxPublishing: Get<u32>;
+		/// The maximum amount of publishing per publisher.
+		#[pallet::constant]
+		type MaxPublishing: Get<u32>;
 
-    /// The maximum length of service name.
-    #[pallet::constant]
-    type MaximumNameLength: Get<u32>;
+		/// The maximum length of service name.
+		#[pallet::constant]
+		type MaximumNameLength: Get<u32>;
 
-    /// The maximum length of service contract link.
-    #[pallet::constant]
-    type MaximumContractLength: Get<u32>;
+		/// The maximum length of service contract link.
+		#[pallet::constant]
+		type MaximumContractLength: Get<u32>;
 
-    /// Maximum acceptable description length.
+		/// Maximum acceptable description length.
 		#[pallet::constant]
 		type MaximumDescriptionLength: Get<u32>;
 
-    /// Handler for the unbalanced decrease when slashing for a rejected proposal or bounty.
+		/// Handler for the unbalanced decrease when slashing for a rejected proposal or bounty.
 		type OnSlash: OnUnbalanced<NegativeImbalanceOf<Self>>;
 
-    /// The origin which may forcibly approve or revoke approval publisher. Root can always do this.
+		/// The origin which may forcibly approve or revoke approval publisher. Root can always do this.
 		type ApproveOrigin: EnsureOrigin<Self::Origin>;
 
-    /// The origin which may forcibly unpublish service. Root can always do this.
+		/// The origin which may forcibly unpublish service. Root can always do this.
 		type ForceOrigin: EnsureOrigin<Self::Origin>;
 
 		/// Weight information for extrinsics in this pallet.
 		type WeightInfo: WeightInfo;
 	}
 
-  #[pallet::event]
+	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-    /// New published service.
-    ServicePublished{ service_id: ServiceIndex, on: T::BlockNumber },
-    /// A service has been taken down.
-    ServiceUnpublished{ service_id: ServiceIndex, on: T::BlockNumber },
-    /// New subscription to a service.
-    ServiceSubscribed{ service_id: ServiceIndex, subscriber: T::AccountId },
-    /// A subscription was cancelled.
-    ServiceUnsubscribed{ service_id: ServiceIndex, subscriber: T::AccountId },
-    /// A subscription has been renew.
-    SubscriptionRenew{ service_id: ServiceIndex, subscriber: T::AccountId, expire_on: T::BlockNumber },
-    /// An account has been requested for approved publisher
-    RequestApprovedPublished{ account_id: T::AccountId },
-    /// A publisher has been approved.
-    PublisherApproved{ publisher: T::AccountId },
-    /// A approved publisher was revoked.
-    PublisherRovokeApproval{ publisher: T::AccountId },
-  }
+		/// New published service.
+		ServicePublished { service_id: ServiceIndex, on: T::BlockNumber },
+		/// A service has been taken down.
+		ServiceUnpublished { service_id: ServiceIndex, on: T::BlockNumber },
+		/// New subscription to a service.
+		ServiceSubscribed { service_id: ServiceIndex, subscriber: T::AccountId },
+		/// A subscription was cancelled.
+		ServiceUnsubscribed { service_id: ServiceIndex, subscriber: T::AccountId },
+		/// A subscription has been renew.
+		SubscriptionRenew {
+			service_id: ServiceIndex,
+			subscriber: T::AccountId,
+			expire_on: T::BlockNumber,
+		},
+		/// An account has been requested for approved publisher
+		RequestApprovedPublished { account_id: T::AccountId },
+		/// A publisher has been approved.
+		PublisherApproved { publisher: T::AccountId },
+		/// A approved publisher was revoked.
+		PublisherRovokeApproval { publisher: T::AccountId },
+	}
 
-  #[pallet::error]
-  pub enum Error<T> {
-    ServiceAlreadyPublished,
-    ServiceNotFound,
-    ServiceAlreadyUnpublished,
-    NotServicePublisher,
-    // request publishing
-    AlreadyRequestForApproval,
-    NotRequestForApproval,
-    AlreadyApprovedPublisher,
-    AlreadyApprovedOrRequested,
-    // publish service
-    NotApprovedPublisher,
-    NameTooLong,
-    DescriptionTooLong,
-    InsufficientPublisherBalance,
-    // subscribe service
-    AlreadySubscribed,
-    SubscriptionNotFound,
-    SubscriptionInactive,
-    NotPeriodicService,
-    InsufficientSubscriberBalance,
-  }
+	#[pallet::error]
+	pub enum Error<T> {
+		ServiceAlreadyPublished,
+		ServiceNotFound,
+		ServiceAlreadyUnpublished,
+		NotServicePublisher,
+		// request publishing
+		AlreadyRequestForApproval,
+		NotRequestForApproval,
+		AlreadyApprovedPublisher,
+		AlreadyApprovedOrRequested,
+		// publish service
+		NotApprovedPublisher,
+		NameTooLong,
+		DescriptionTooLong,
+		InsufficientPublisherBalance,
+		// subscribe service
+		AlreadySubscribed,
+		SubscriptionNotFound,
+		SubscriptionInactive,
+		NotPeriodicService,
+		InsufficientSubscriberBalance,
+	}
 
-  /// Number of service that have been published.
+	/// Number of service that have been published.
 	#[pallet::storage]
 	#[pallet::getter(fn service_count)]
 	pub type ServiceCount<T: Config> = StorageValue<_, ServiceIndex, ValueQuery>;
 
-  /// Services that have been published.
+	/// Services that have been published.
 	#[pallet::storage]
 	#[pallet::getter(fn services)]
 	pub type Services<T: Config> = StorageMap<
@@ -209,259 +215,288 @@ pub mod pallet {
 		Twox64Concat,
 		ServiceIndex,
 		Service<T::AccountId, BalanceOf<T>, T::MaximumNameLength, T::MaximumContractLength>,
-    OptionQuery
+		OptionQuery,
 	>;
 
-  /// The description of each service.
+	/// The description of each service.
 	#[pallet::storage]
 	#[pallet::getter(fn service_descriptions)]
 	pub type ServiceDescriptions<T: Config> =
 		StorageMap<_, Twox64Concat, ServiceIndex, BoundedVec<u8, T::MaximumDescriptionLength>>;
 
-  /// Subscription that has been established.
+	/// Subscription that has been established.
 	#[pallet::storage]
 	#[pallet::getter(fn subscriptions)]
 	pub type Subscriptions<T: Config> = StorageDoubleMap<
-    _, 
-    Twox64Concat, 
-    ServiceIndex, 
-    Twox64Concat,
-    T::AccountId, 
-    Subscription<T::BlockNumber>, 
-    OptionQuery
-  >;
+		_,
+		Twox64Concat,
+		ServiceIndex,
+		Twox64Concat,
+		T::AccountId,
+		Subscription<T::BlockNumber>,
+		OptionQuery,
+	>;
 
-  /// This indicates whether an account is approved publisher or not
+	/// This indicates whether an account is approved publisher or not
 	#[pallet::storage]
 	#[pallet::getter(fn approved_publisher)]
-	pub type ApprovedPublisher<T: Config> = StorageMap<_, Twox64Concat, T::AccountId, PublisherStatus, OptionQuery>;
+	pub type ApprovedPublisher<T: Config> =
+		StorageMap<_, Twox64Concat, T::AccountId, PublisherStatus, OptionQuery>;
 
-  #[pallet::call]
-  impl<T: Config> Pallet<T> {
-    #[pallet::weight(<T as Config>::WeightInfo::request_approved_publisher())]
-    pub fn request_approved_publisher(
-      origin: OriginFor<T>
-    ) -> DispatchResult {
-      let sender = ensure_signed(origin)?;
+	#[pallet::call]
+	impl<T: Config> Pallet<T> {
+		#[pallet::weight(<T as Config>::WeightInfo::request_approved_publisher())]
+		pub fn request_approved_publisher(origin: OriginFor<T>) -> DispatchResult {
+			let sender = ensure_signed(origin)?;
 
-      // Get status of the sender.
-      match ApprovedPublisher::<T>::get(&sender) {
-        None => {
-          // set the status of the sender to requested approval
-          ApprovedPublisher::<T>::insert(&sender, PublisherStatus::Requested);
+			// Get status of the sender.
+			match ApprovedPublisher::<T>::get(&sender) {
+				None => {
+					// set the status of the sender to requested approval
+					ApprovedPublisher::<T>::insert(&sender, PublisherStatus::Requested);
 
-          Self::deposit_event(Event::RequestApprovedPublished{ account_id: sender });
-          Ok(())
-        },
-        Some(_) => Err(Error::<T>::AlreadyApprovedOrRequested)?
-      }
-    }
+					Self::deposit_event(Event::RequestApprovedPublished { account_id: sender });
+					Ok(())
+				},
+				Some(_) => Err(Error::<T>::AlreadyApprovedOrRequested)?,
+			}
+		}
 
-    #[pallet::weight(<T as Config>::WeightInfo::approve_publisher())]
-    pub fn approve_publisher(
-      origin: OriginFor<T>,
-      account_id: T::AccountId
-    ) -> DispatchResult {
-      T::ApproveOrigin::ensure_origin(origin)?;
+		#[pallet::weight(<T as Config>::WeightInfo::approve_publisher())]
+		pub fn approve_publisher(origin: OriginFor<T>, account_id: T::AccountId) -> DispatchResult {
+			T::ApproveOrigin::ensure_origin(origin)?;
 
-      // Get status of the sender.
-      let publisher_status = ApprovedPublisher::<T>::get(&account_id).ok_or(Error::<T>::NotRequestForApproval)?;
-      ensure!(publisher_status == PublisherStatus::Requested, Error::<T>::AlreadyApprovedPublisher);
+			// Get status of the sender.
+			let publisher_status = ApprovedPublisher::<T>::get(&account_id)
+				.ok_or(Error::<T>::NotRequestForApproval)?;
+			ensure!(
+				publisher_status == PublisherStatus::Requested,
+				Error::<T>::AlreadyApprovedPublisher
+			);
 
-      // set the status of the sender to requested approval
-      ApprovedPublisher::<T>::insert(&account_id, PublisherStatus::Approved);
+			// set the status of the sender to requested approval
+			ApprovedPublisher::<T>::insert(&account_id, PublisherStatus::Approved);
 
-      Self::deposit_event(Event::PublisherApproved{ publisher: account_id });
+			Self::deposit_event(Event::PublisherApproved { publisher: account_id });
 			Ok(())
-    }
+		}
 
-    #[pallet::weight(<T as Config>::WeightInfo::revoke_publisher())]
-    pub fn revoke_publisher(
-      origin: OriginFor<T>,
-      account_id: T::AccountId
-    ) -> DispatchResult {
-      T::ApproveOrigin::ensure_origin(origin)?;
+		#[pallet::weight(<T as Config>::WeightInfo::revoke_publisher())]
+		pub fn revoke_publisher(origin: OriginFor<T>, account_id: T::AccountId) -> DispatchResult {
+			T::ApproveOrigin::ensure_origin(origin)?;
 
-      // Get status of the sender.
-      let publisher_status = ApprovedPublisher::<T>::get(&account_id).ok_or(Error::<T>::NotRequestForApproval)?;
-      ensure!(publisher_status == PublisherStatus::Approved, Error::<T>::NotApprovedPublisher);
+			// Get status of the sender.
+			let publisher_status = ApprovedPublisher::<T>::get(&account_id)
+				.ok_or(Error::<T>::NotRequestForApproval)?;
+			ensure!(
+				publisher_status == PublisherStatus::Approved,
+				Error::<T>::NotApprovedPublisher
+			);
 
-      // remove the account from approved publisher.
-      ApprovedPublisher::<T>::remove(&account_id);
+			// remove the account from approved publisher.
+			ApprovedPublisher::<T>::remove(&account_id);
 
-      Self::deposit_event(Event::PublisherRovokeApproval{ publisher: account_id });
+			Self::deposit_event(Event::PublisherRovokeApproval { publisher: account_id });
 			Ok(())
-    }
+		}
 
-    #[pallet::weight(<T as Config>::WeightInfo::publish_service(name.len() as u32))]
-    pub fn publish_service(
+		#[pallet::weight(<T as Config>::WeightInfo::publish_service(name.len() as u32))]
+		pub fn publish_service(
 			origin: OriginFor<T>,
 			cost: BalanceOf<T>,
 			name: Vec<u8>,
-      description: Vec<u8>,
-      maybe_periodic: Option<u32>,
+			description: Vec<u8>,
+			maybe_periodic: Option<u32>,
 		) -> DispatchResult {
-      let publisher = ensure_signed(origin)?;
+			let publisher = ensure_signed(origin)?;
 
-      let publisher_status = ApprovedPublisher::<T>::get(&publisher).ok_or(Error::<T>::NotRequestForApproval)?;
-      ensure!(publisher_status == PublisherStatus::Approved, Error::<T>::NotApprovedPublisher);
+			let publisher_status =
+				ApprovedPublisher::<T>::get(&publisher).ok_or(Error::<T>::NotRequestForApproval)?;
+			ensure!(
+				publisher_status == PublisherStatus::Approved,
+				Error::<T>::NotApprovedPublisher
+			);
 
-      let bounded_name : BoundedVec<_, T::MaximumNameLength> = name.clone().try_into().map_err(|()| Error::<T>::NameTooLong)?;
-      let bounded_description : BoundedVec<_, T::MaximumDescriptionLength> = description.clone().try_into().map_err(|()| Error::<T>::DescriptionTooLong)?;
-      let service_id = Self::service_count();
+			let bounded_name: BoundedVec<_, T::MaximumNameLength> =
+				name.clone().try_into().map_err(|()| Error::<T>::NameTooLong)?;
+			let bounded_description: BoundedVec<_, T::MaximumDescriptionLength> =
+				description.clone().try_into().map_err(|()| Error::<T>::DescriptionTooLong)?;
+			let service_id = Self::service_count();
 
-      // reserve deposit for new service
-      let bond = T::BaseDeposit::get() + T::DataDepositPerByte::get() * ((bounded_name.len() + bounded_description.len()) as u32).into();
-      T::Currency::reserve(&publisher, bond).map_err(|_| Error::<T>::InsufficientPublisherBalance)?;
-      ServiceCount::<T>::put(service_id + 1);
+			// reserve deposit for new service
+			let bond = T::BaseDeposit::get() +
+				T::DataDepositPerByte::get() *
+					((bounded_name.len() + bounded_description.len()) as u32).into();
+			T::Currency::reserve(&publisher, bond)
+				.map_err(|_| Error::<T>::InsufficientPublisherBalance)?;
+			ServiceCount::<T>::put(service_id + 1);
 
-      let service = Service {
-        publisher,
-        cost,
-        bond,
-        name: bounded_name,
-        contract: b"https://contract-link".to_vec().try_into().unwrap(),
-        maybe_periodic,
-        status: ServiceStatus::Published,
-      };
+			let service = Service {
+				publisher,
+				cost,
+				bond,
+				name: bounded_name,
+				contract: b"https://contract-link".to_vec().try_into().unwrap(),
+				maybe_periodic,
+				status: ServiceStatus::Published,
+			};
 
-      Services::<T>::insert(service_id, &service);
-      ServiceDescriptions::<T>::insert(service_id, bounded_description);
+			Services::<T>::insert(service_id, &service);
+			ServiceDescriptions::<T>::insert(service_id, bounded_description);
 
-      Self::deposit_event(Event::<T>::ServicePublished { service_id, on: <frame_system::Pallet<T>>::block_number() });
-      Ok(())
-    }
+			Self::deposit_event(Event::<T>::ServicePublished {
+				service_id,
+				on: <frame_system::Pallet<T>>::block_number(),
+			});
+			Ok(())
+		}
 
-    #[pallet::weight(<T as Config>::WeightInfo::subscribe_service())]
-    pub fn subscribe_service(
-      origin: OriginFor<T>,
-      service_id: ServiceIndex,
-    ) -> DispatchResult {
-      let subscriber = ensure_signed(origin)?;
+		#[pallet::weight(<T as Config>::WeightInfo::subscribe_service())]
+		pub fn subscribe_service(origin: OriginFor<T>, service_id: ServiceIndex) -> DispatchResult {
+			let subscriber = ensure_signed(origin)?;
 
-      match Services::<T>::get(&service_id) {
-        None => Err(Error::<T>::ServiceNotFound)?,
-        Some(service) => {
-          // ensure!(!Subscriptions::<T>::contains_key(&service_id, &subscriber), Error::<T>::AlreadySubscribed);
-          ensure!(service.status == ServiceStatus::Published, Error::<T>::ServiceAlreadyUnpublished);
+			match Services::<T>::get(&service_id) {
+				None => Err(Error::<T>::ServiceNotFound)?,
+				Some(service) => {
+					// ensure!(!Subscriptions::<T>::contains_key(&service_id, &subscriber), Error::<T>::AlreadySubscribed);
+					ensure!(
+						service.status == ServiceStatus::Published,
+						Error::<T>::ServiceAlreadyUnpublished
+					);
 
-          if let Some(subscription) = Subscriptions::<T>::get(&service_id, &subscriber) {
-            ensure!(!subscription.active, Error::<T>::AlreadySubscribed);
-          }
-          
-          T::Currency::transfer(&subscriber, &service.publisher, service.cost, KeepAlive).map_err(|_| Error::<T>::InsufficientSubscriberBalance)?;
+					if let Some(subscription) = Subscriptions::<T>::get(&service_id, &subscriber) {
+						ensure!(!subscription.active, Error::<T>::AlreadySubscribed);
+					}
 
-          let start_on = <frame_system::Pallet<T>>::block_number();
-          let expire_on = if let Some(period) = service.maybe_periodic {
-            Some(start_on + period.into())
-          } else {
-            None
-          };
+					T::Currency::transfer(&subscriber, &service.publisher, service.cost, KeepAlive)
+						.map_err(|_| Error::<T>::InsufficientSubscriberBalance)?;
 
-          let subscription = Subscription {
-            start_on,
-            expire_on,
-            active: true,
-          };
-          Subscriptions::<T>::insert(&service_id, subscriber.clone(), subscription);
+					let start_on = <frame_system::Pallet<T>>::block_number();
+					let expire_on = if let Some(period) = service.maybe_periodic {
+						Some(start_on + period.into())
+					} else {
+						None
+					};
 
-          Self::deposit_event(Event::<T>::ServiceSubscribed{ service_id, subscriber });
-          Ok(())
-        }
-      }
-    }
+					let subscription = Subscription { start_on, expire_on, active: true };
+					Subscriptions::<T>::insert(&service_id, subscriber.clone(), subscription);
 
-    #[pallet::weight(<T as Config>::WeightInfo::unsubscribe_service())]
-    pub fn unsubscribe_service(
-      origin: OriginFor<T>,
-      service_id: ServiceIndex,
-    ) -> DispatchResult {
-      let subscriber = ensure_signed(origin)?;
+					Self::deposit_event(Event::<T>::ServiceSubscribed { service_id, subscriber });
+					Ok(())
+				},
+			}
+		}
 
-      match Services::<T>::get(&service_id) {
-        None => Err(Error::<T>::ServiceNotFound)?,
-        Some(service) => {
-          ensure!(service.status == ServiceStatus::Published, Error::<T>::ServiceAlreadyUnpublished);
+		#[pallet::weight(<T as Config>::WeightInfo::unsubscribe_service())]
+		pub fn unsubscribe_service(
+			origin: OriginFor<T>,
+			service_id: ServiceIndex,
+		) -> DispatchResult {
+			let subscriber = ensure_signed(origin)?;
 
-          Subscriptions::<T>::try_mutate_exists(&service_id, subscriber.clone(), |maybe_sub| -> DispatchResult {
-            let mut subscription = maybe_sub.as_mut().ok_or(Error::<T>::SubscriptionNotFound)?;
-    
-            ensure!(subscription.active, Error::<T>::SubscriptionInactive);
-            subscription.active = false;
-    
-            Ok(())
-          })?;
-    
-          Self::deposit_event(Event::<T>::ServiceUnsubscribed{ service_id, subscriber });
-          Ok(())
-        }
-      }
-    }
+			match Services::<T>::get(&service_id) {
+				None => Err(Error::<T>::ServiceNotFound)?,
+				Some(service) => {
+					ensure!(
+						service.status == ServiceStatus::Published,
+						Error::<T>::ServiceAlreadyUnpublished
+					);
 
-    #[pallet::weight(<T as Config>::WeightInfo::renew_subscription())]
-    pub fn renew_subscription(
-      origin: OriginFor<T>,
-      service_id: ServiceIndex,
-    ) -> DispatchResult {
-      let subscriber = ensure_signed(origin)?;
+					Subscriptions::<T>::try_mutate_exists(
+						&service_id,
+						subscriber.clone(),
+						|maybe_sub| -> DispatchResult {
+							let mut subscription =
+								maybe_sub.as_mut().ok_or(Error::<T>::SubscriptionNotFound)?;
 
-      match Services::<T>::get(&service_id) {
-        None => Err(Error::<T>::ServiceNotFound)?,
-        Some(service) => match service.maybe_periodic {
-          None => Err(Error::<T>::NotPeriodicService)?,
-          Some(period) => {
-            let start_on = <frame_system::Pallet<T>>::block_number();
-            let expire_on = start_on + period.into();
+							ensure!(subscription.active, Error::<T>::SubscriptionInactive);
+							subscription.active = false;
 
-            Subscriptions::<T>::try_mutate_exists(&service_id, subscriber.clone(), |maybe_sub| -> DispatchResult {
-              let mut subscription = maybe_sub.as_mut().ok_or(Error::<T>::SubscriptionNotFound)?;
-      
-              ensure!(subscription.active, Error::<T>::SubscriptionInactive);
-              subscription.expire_on = Some(expire_on);
-  
-              Ok(())
-            })?;
-            Self::deposit_event(Event::<T>::SubscriptionRenew{ service_id, subscriber, expire_on });
-          }
-        }
-      }
+							Ok(())
+						},
+					)?;
 
-      Ok(())
-    }
+					Self::deposit_event(Event::<T>::ServiceUnsubscribed { service_id, subscriber });
+					Ok(())
+				},
+			}
+		}
 
-    #[pallet::weight(<T as Config>::WeightInfo::unpublish_service())]
-    pub fn unpublish_service(
-      origin: OriginFor<T>,
-      service_id: ServiceIndex,
-    ) -> DispatchResult {
-      let maybe_publisher = ensure_signed(origin.clone())
+		#[pallet::weight(<T as Config>::WeightInfo::renew_subscription())]
+		pub fn renew_subscription(
+			origin: OriginFor<T>,
+			service_id: ServiceIndex,
+		) -> DispatchResult {
+			let subscriber = ensure_signed(origin)?;
+
+			match Services::<T>::get(&service_id) {
+				None => Err(Error::<T>::ServiceNotFound)?,
+				Some(service) => match service.maybe_periodic {
+					None => Err(Error::<T>::NotPeriodicService)?,
+					Some(period) => {
+						let start_on = <frame_system::Pallet<T>>::block_number();
+						let expire_on = start_on + period.into();
+
+						Subscriptions::<T>::try_mutate_exists(
+							&service_id,
+							subscriber.clone(),
+							|maybe_sub| -> DispatchResult {
+								let mut subscription =
+									maybe_sub.as_mut().ok_or(Error::<T>::SubscriptionNotFound)?;
+
+								ensure!(subscription.active, Error::<T>::SubscriptionInactive);
+								subscription.expire_on = Some(expire_on);
+
+								Ok(())
+							},
+						)?;
+						Self::deposit_event(Event::<T>::SubscriptionRenew {
+							service_id,
+							subscriber,
+							expire_on,
+						});
+					},
+				},
+			}
+
+			Ok(())
+		}
+
+		#[pallet::weight(<T as Config>::WeightInfo::unpublish_service())]
+		pub fn unpublish_service(origin: OriginFor<T>, service_id: ServiceIndex) -> DispatchResult {
+			let maybe_publisher = ensure_signed(origin.clone())
 				.map(Some)
 				.or_else(|_| T::ForceOrigin::ensure_origin(origin).map(|_| None))?;
 
-      Services::<T>::try_mutate_exists(&service_id, |maybe_service| -> DispatchResult {
-        let mut service = maybe_service.as_mut().ok_or(Error::<T>::ServiceNotFound)?;
+			Services::<T>::try_mutate_exists(&service_id, |maybe_service| -> DispatchResult {
+				let mut service = maybe_service.as_mut().ok_or(Error::<T>::ServiceNotFound)?;
 
-        if let Some(publisher) = maybe_publisher {
-          ensure!(publisher == service.publisher, Error::<T>::NotServicePublisher);
-        }
+				if let Some(publisher) = maybe_publisher {
+					ensure!(publisher == service.publisher, Error::<T>::NotServicePublisher);
+				}
 
-        match service.status {
-          ServiceStatus::Unpublished { .. } => return Err(Error::<T>::ServiceAlreadyUnpublished.into()),
-          ServiceStatus::Published { .. } => {
-            ServiceDescriptions::<T>::remove(&service_id);
-            let imbalance = T::Currency::slash_reserved(&service.publisher, service.bond).0;
-            T::OnSlash::on_unbalanced(imbalance);
+				match service.status {
+					ServiceStatus::Unpublished { .. } =>
+						return Err(Error::<T>::ServiceAlreadyUnpublished.into()),
+					ServiceStatus::Published { .. } => {
+						ServiceDescriptions::<T>::remove(&service_id);
+						let imbalance =
+							T::Currency::slash_reserved(&service.publisher, service.bond).0;
+						T::OnSlash::on_unbalanced(imbalance);
 
-            service.bond = Zero::zero();
-            service.status = ServiceStatus::Unpublished;
+						service.bond = Zero::zero();
+						service.status = ServiceStatus::Unpublished;
 
-            Self::deposit_event(Event::<T>::ServiceUnpublished{ service_id, on: <frame_system::Pallet<T>>::block_number() });
-            Ok(())
-          }
-        }
-      })?;
+						Self::deposit_event(Event::<T>::ServiceUnpublished {
+							service_id,
+							on: <frame_system::Pallet<T>>::block_number(),
+						});
+						Ok(())
+					},
+				}
+			})?;
 
-      Ok(())
-    }
-  }
+			Ok(())
+		}
+	}
 }

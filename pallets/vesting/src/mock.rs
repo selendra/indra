@@ -129,15 +129,11 @@ pub struct ExtBuilder;
 
 impl ExtBuilder {
 	pub fn build() -> sp_io::TestExternalities {
-		let mut t = frame_system::GenesisConfig::default()
-			.build_storage::<Runtime>()
-			.unwrap();
+		let mut t = frame_system::GenesisConfig::default().build_storage::<Runtime>().unwrap();
 
-		pallet_balances::GenesisConfig::<Runtime> {
-			balances: vec![(ALICE, 100), (CHARLIE, 50)],
-		}
-		.assimilate_storage(&mut t)
-		.unwrap();
+		pallet_balances::GenesisConfig::<Runtime> { balances: vec![(ALICE, 100), (CHARLIE, 50)] }
+			.assimilate_storage(&mut t)
+			.unwrap();
 
 		vesting::GenesisConfig::<Runtime> {
 			vesting: vec![

@@ -136,10 +136,7 @@ where
 		origin: &H160,
 	) -> Option<Result<(), TransactionValidityError>> {
 		if let Call::transact { transaction } = self {
-			Some(Pallet::<T>::validate_transaction_in_block(
-				*origin,
-				&transaction,
-			))
+			Some(Pallet::<T>::validate_transaction_in_block(*origin, &transaction))
 		} else {
 			None
 		}
@@ -147,10 +144,7 @@ where
 
 	pub fn validate_self_contained(&self, origin: &H160) -> Option<TransactionValidity> {
 		if let Call::transact { transaction } = self {
-			Some(Pallet::<T>::validate_transaction_in_pool(
-				*origin,
-				transaction,
-			))
+			Some(Pallet::<T>::validate_transaction_in_pool(*origin, transaction))
 		} else {
 			None
 		}
@@ -197,9 +191,7 @@ pub mod pallet {
 			);
 			// move block hash pruning window by one block
 			let block_hash_count = T::BlockHashCount::get();
-			let to_remove = n
-				.saturating_sub(block_hash_count)
-				.saturating_sub(One::one());
+			let to_remove = n.saturating_sub(block_hash_count).saturating_sub(One::one());
 			// keep genesis hash
 			if !to_remove.is_zero() {
 				<BlockHash<T>>::remove(U256::from(
@@ -378,7 +370,7 @@ impl<T: Config> Pallet<T> {
 				msg.copy_from_slice(
 					&ethereum::LegacyTransactionMessage::from(t.clone()).hash()[..],
 				);
-			}
+			},
 			Transaction::EIP2930(t) => {
 				sig[0..32].copy_from_slice(&t.r[..]);
 				sig[32..64].copy_from_slice(&t.s[..]);
@@ -386,7 +378,7 @@ impl<T: Config> Pallet<T> {
 				msg.copy_from_slice(
 					&ethereum::EIP2930TransactionMessage::from(t.clone()).hash()[..],
 				);
-			}
+			},
 			Transaction::EIP1559(t) => {
 				sig[0..32].copy_from_slice(&t.r[..]);
 				sig[32..64].copy_from_slice(&t.s[..]);
@@ -394,12 +386,10 @@ impl<T: Config> Pallet<T> {
 				msg.copy_from_slice(
 					&ethereum::EIP1559TransactionMessage::from(t.clone()).hash()[..],
 				);
-			}
+			},
 		}
 		let pubkey = sp_io::crypto::secp256k1_ecdsa_recover(&sig, &msg).ok()?;
-		Some(H160::from(H256::from_slice(
-			Keccak256::digest(&pubkey).as_slice(),
-		)))
+		Some(H160::from(H256::from_slice(Keccak256::digest(&pubkey).as_slice())))
 	}
 
 	fn store_block(post_log: bool, block_number: U256) {
@@ -413,9 +403,8 @@ impl<T: Config> Pallet<T> {
 			statuses.push(status);
 			receipts.push(receipt.clone());
 			let (logs, used_gas) = match receipt {
-				Receipt::Legacy(d) | Receipt::EIP2930(d) | Receipt::EIP1559(d) => {
-					(d.logs.clone(), d.used_gas)
-				}
+				Receipt::Legacy(d) | Receipt::EIP2930(d) | Receipt::EIP1559(d) =>
+					(d.logs.clone(), d.used_gas),
 			};
 			cumulative_gas_used = used_gas;
 			Self::logs_bloom(logs, &mut logs_bloom);
@@ -496,10 +485,9 @@ impl<T: Config> Pallet<T> {
 			),
 		};
 		if gasometer.record_transaction(transaction_cost).is_err() {
-			return Err(InvalidTransaction::Custom(
-				TransactionValidationError::GasLimitTooLow as u8,
+			return Err(
+				InvalidTransaction::Custom(TransactionValidationError::GasLimitTooLow as u8).into()
 			)
-			.into());
 		}
 
 		if let Some(chain_id) = transaction_data.chain_id {
@@ -507,7 +495,7 @@ impl<T: Config> Pallet<T> {
 				return Err(InvalidTransaction::Custom(
 					TransactionValidationError::InvalidChainId as u8,
 				)
-				.into());
+				.into())
 			}
 		}
 
@@ -515,7 +503,7 @@ impl<T: Config> Pallet<T> {
 			return Err(InvalidTransaction::Custom(
 				TransactionValidationError::GasLimitTooHigh as u8,
 			)
-			.into());
+			.into())
 		}
 
 		let base_fee = T::FeeCalculator::min_gas_price();
@@ -531,11 +519,11 @@ impl<T: Config> Pallet<T> {
 			// EIP-1559 transactions.
 			max_fee_per_gas
 		} else {
-			return Err(InvalidTransaction::Payment.into());
+			return Err(InvalidTransaction::Payment.into())
 		};
 
 		if gas_price < base_fee {
-			return Err(InvalidTransaction::Payment.into());
+			return Err(InvalidTransaction::Payment.into())
 		}
 
 		let mut fee = gas_price.saturating_mul(gas_limit);
@@ -553,11 +541,11 @@ impl<T: Config> Pallet<T> {
 			return Err(InvalidTransaction::Custom(
 				TransactionValidationError::InsufficientFundsForTransfer as u8,
 			)
-			.into());
+			.into())
 		}
 		let total_payment = transaction_data.value.saturating_add(fee);
 		if account_data.balance < total_payment {
-			return Err(InvalidTransaction::Payment.into());
+			return Err(InvalidTransaction::Payment.into())
 		}
 
 		Ok((account_data.nonce, priority))
@@ -577,7 +565,7 @@ impl<T: Config> Pallet<T> {
 			Self::validate_transaction_common(origin, &transaction_data)?;
 
 		if transaction_nonce < account_nonce {
-			return Err(InvalidTransaction::Stale.into());
+			return Err(InvalidTransaction::Stale.into())
 		}
 
 		// The tag provides and requires must be filled correctly according to the nonce.
@@ -652,9 +640,8 @@ impl<T: Config> Pallet<T> {
 			let logs = status.clone().logs;
 			let cumulative_gas_used = if let Some((_, _, receipt)) = pending.last() {
 				match receipt {
-					Receipt::Legacy(d) | Receipt::EIP2930(d) | Receipt::EIP1559(d) => {
-						d.used_gas.saturating_add(used_gas)
-					}
+					Receipt::Legacy(d) | Receipt::EIP2930(d) | Receipt::EIP1559(d) =>
+						d.used_gas.saturating_add(used_gas),
 				}
 			} else {
 				used_gas
@@ -748,7 +735,7 @@ impl<T: Config> Pallet<T> {
 						t.action,
 						Vec::new(),
 					)
-				}
+				},
 				Transaction::EIP2930(t) => {
 					let base_fee = T::FeeCalculator::min_gas_price();
 					let priority_fee = t
@@ -770,7 +757,7 @@ impl<T: Config> Pallet<T> {
 						t.action,
 						access_list,
 					)
-				}
+				},
 				Transaction::EIP1559(t) => {
 					let access_list: Vec<(H160, Vec<H256>)> = t
 						.access_list
@@ -787,7 +774,7 @@ impl<T: Config> Pallet<T> {
 						t.action,
 						access_list,
 					)
-				}
+				},
 			}
 		};
 
@@ -808,7 +795,7 @@ impl<T: Config> Pallet<T> {
 				.map_err(Into::into)?;
 
 				Ok((Some(target), None, CallOrCreateInfo::Call(res)))
-			}
+			},
 			ethereum::TransactionAction::Create => {
 				let res = T::Runner::create(
 					from,
@@ -824,7 +811,7 @@ impl<T: Config> Pallet<T> {
 				.map_err(Into::into)?;
 
 				Ok((None, Some(res.value), CallOrCreateInfo::Create(res)))
-			}
+			},
 		}
 	}
 
@@ -843,9 +830,7 @@ impl<T: Config> Pallet<T> {
 		// In the context of the block, a transaction with a nonce that is
 		// too high should be considered invalid and make the whole block invalid.
 		if transaction_nonce > account_nonce {
-			Err(TransactionValidityError::Invalid(
-				InvalidTransaction::Future,
-			))
+			Err(TransactionValidityError::Invalid(InvalidTransaction::Future))
 		} else if transaction_nonce < account_nonce {
 			Err(TransactionValidityError::Invalid(InvalidTransaction::Stale))
 		} else {

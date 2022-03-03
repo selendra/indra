@@ -61,9 +61,8 @@ impl Formatter for Geth {
 					VError::InvalidSignature => "invalid sender".into(),
 					VError::GasLimitTooLow => "intrinsic gas too low".into(),
 					VError::GasLimitTooHigh => "exceeds block gas limit".into(),
-					VError::InsufficientFundsForTransfer => {
-						"insufficient funds for transfer".into()
-					}
+					VError::InsufficientFundsForTransfer =>
+						"insufficient funds for transfer".into(),
 				},
 				_ => "unknown error".into(),
 			},

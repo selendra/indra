@@ -13,20 +13,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+pub mod precompiles;
+
 pub mod currency {
+	use cardamom_runtime_constants as constants;
 	use node_primitives::Balance;
-	use selendra_runtime_constants as constants;
 
 	/// The existential deposit. Set to 1/10 of its parent Relay Chain.
 	pub const EXISTENTIAL_DEPOSIT: Balance = constants::currency::EXISTENTIAL_DEPOSIT / 10;
 
 	pub const UNITS: Balance = constants::currency::UNITS;
 	pub const CENTS: Balance = constants::currency::CENTS;
-	pub const GRAND: Balance = 100 * UNITS;
 	pub const MILLICENTS: Balance = constants::currency::MILLICENTS;
+	pub const GRAND: Balance = 100 * UNITS;
+	pub const NANO: Balance = constants::currency::NANO;
 
 	pub const fn deposit(items: u32, bytes: u32) -> Balance {
-		// map to 1/10 of what the selendra relay chain charges (v9020)
+		// 1/10 of Cardamom testnet
 		constants::currency::deposit(items, bytes) / 10
 	}
 }

@@ -248,6 +248,7 @@ fn indracore_genesis(
 	endowed_accounts: Vec<AccountId>,
 	id: ParaId,
 ) -> indracore_runtime::GenesisConfig {
+	let root_key = hex!("c824993c8b7bbd6956b2fb4e7a884faa82b58699008aa9dc5708e7086798410b").into();
 	indracore_runtime::GenesisConfig {
 		system: indracore_runtime::SystemConfig {
 			code: indracore_runtime::WASM_BINARY
@@ -281,6 +282,10 @@ fn indracore_genesis(
 		selendra_xcm: indracore_runtime::SelendraXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
 		},
+		evm: Default::default(),
+		ethereum: Default::default(),
+		base_fee: Default::default(),
+		sudo: indracore_runtime::SudoConfig { key: Some(root_key) },
 	}
 }
 
@@ -464,6 +469,9 @@ fn indranet_genesis(
 		selendra_xcm: indranet_runtime::SelendraXcmConfig {
 			safe_xcm_version: Some(SAFE_XCM_VERSION),
 		},
+		evm: Default::default(),
+		ethereum: Default::default(),
+		base_fee: Default::default(),
 		sudo: indranet_runtime::SudoConfig { key: Some(root_key) },
 	}
 }

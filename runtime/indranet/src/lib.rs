@@ -24,6 +24,7 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 pub mod constants;
 mod weights;
+mod precompiles;
 
 use sp_api::impl_runtime_apis;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
@@ -411,62 +412,6 @@ impl pallet_collator_selection::Config for Runtime {
 	type WeightInfo = weights::pallet_collator_selection::WeightInfo<Runtime>;
 }
 
-parameter_types! {
-	pub const BasicDeposit: u64 = 10;
-	pub const FieldDeposit: u64 = 10;
-	pub const SubAccountDeposit: u64 = 10;
-	pub const MaxSubAccounts: u32 = 2;
-	pub const MaxUseridentities: u32 = 2;
-	pub const MaxAdditionalFields: u32 = 2;
-	pub const MaxRegistrars: u32 = 20;
-	pub const MaxEmailsize: u32 = 30;
-	pub const MaxTokenid: u32 = 30;
-	pub const MaxAccessTokenMetadata: u32 = 1;
-
-}
-
-impl pallet_studentid::Config for Runtime {
-	type Event = Event;
-	type Currency = Balances;
-	type Slashed = ();
-	type BasicDeposit = BasicDeposit;
-	type FieldDeposit = FieldDeposit;
-	type SubAccountDeposit = SubAccountDeposit;
-	type MaxSubAccounts = MaxSubAccounts;
-	type MaxUseridentities = MaxUseridentities;
-	type MaxAdditionalFields = MaxAdditionalFields;
-	type MaxRegistrars = MaxRegistrars;
-	type MaxEmailsize = MaxEmailsize;
-	type MaxAccessTokenMetadata = MaxAccessTokenMetadata;
-	type MaxTokenid = MaxTokenid;
-	type RegistrarOrigin = frame_system::EnsureRoot<Self::AccountId>;
-	type ForceOrigin = frame_system::EnsureRoot<Self::AccountId>;
-}
-
-parameter_types! {
-	pub const BaseDeposit: Balance = 10 * UNITS;       // 258 bytes on-chain
-	pub const MaxPublishing: u32 = 100;
-	pub const MaximumNameLength: u32 = 100;
-	pub const MaximumContractLength: u32 = 256;
-	pub const MaximumDescriptionLength: u32 = 1275;
-	pub const DataDepositPerByte: Balance = 1 * CENTS;
-}
-
-impl pallet_subscription::Config for Runtime {
-	type Event = Event;
-	type Currency = Balances;
-	type BaseDeposit = BaseDeposit;
-	type MaxPublishing = MaxPublishing;
-	type MaximumNameLength = MaximumNameLength;
-	type MaximumContractLength = MaximumContractLength;
-	type MaximumDescriptionLength = MaximumDescriptionLength;
-	type ApproveOrigin = frame_system::EnsureRoot<AccountId>;
-	type ForceOrigin = frame_system::EnsureRoot<AccountId>;
-	type OnSlash = ();
-	type DataDepositPerByte = DataDepositPerByte;
-	type WeightInfo = pallet_subscription::weights::SubstrateWeight<Runtime>;
-}
-
 impl pallet_sudo::Config for Runtime {
 	type Event = Event;
 	type Call = Call;
@@ -509,10 +454,6 @@ construct_runtime!(
 		Utility: pallet_utility::{Pallet, Call, Event} = 40,
 		Multisig: pallet_multisig::{Pallet, Call, Storage, Event<T>} = 41,
 		Proxy: pallet_proxy::{Pallet, Call, Storage, Event<T>} = 42,
-
-		// Identity
-		IndraIdentity: pallet_studentid::{Pallet, Call, Storage, Event<T>} =50,
-		Subscription: pallet_subscription::{Pallet, Call, Storage, Event<T>} = 51,
 
 		// Sudo.
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Event<T>, Config<T>} = 60,

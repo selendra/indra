@@ -9,3 +9,9 @@ members = [
 # Selendra runtime requires unwinding.
 panic = "unwind"
 opt-level = 3
+
+[patch.crates-io]
+ethereum = { path = "vendors/ethereum" }
+evm = { path = "vendors/evm" }
+evm-gasometer = { path = "vendors/evm/gasometer" }
+evm-runtime = { path = "vendors/evm/runtime" }

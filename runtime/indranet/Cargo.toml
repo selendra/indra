@@ -77,8 +77,23 @@ pallet-xcm = { git = "https://github.com/selendra/selendrachain", branch = "main
 frame-try-runtime = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.16", default-features = false, optional = true }
 
 #Local pallet
-pallet-studentid = { path = "../../pallets/identitysel", default-features = false }
-pallet-subscription = { path = "../../pallets/subscription", default-features = false }
+pallet-bridge = { path = "../../pallets/bridge", default-features = false }
+pallet-bridge-transfer = { path = "../../pallets/bridge_transfer", default-features = false }
+pallet-vesting = { path = "../../pallets/vesting", default-features = false }
+pallet-custom-signatures = { path = "../../pallets/custom-signatures", default-features = false }
+
+# frontier
+fp-rpc = { path = "../../vendors/frontier/primitives/rpc", default-features = false }
+fp-self-contained = { path = "../../vendors/frontier/primitives/self-contained", default-features = false }
+
+pallet-base-fee = { path = "../../vendors/frontier/frame/base-fee", default-features=false }
+pallet-ethereum = { path = "../../vendors/frontier/frame/ethereum", default-features=false }
+pallet-evm = { path = "../../vendors/frontier/frame/evm", default-features=false }
+pallet-evm-precompile-bn128 = { path = "../../vendors/frontier/frame/evm/precompile/bn128", default-features=false }
+pallet-evm-precompile-dispatch = { path = "../../vendors/frontier/frame/evm/precompile/dispatch", default-features=false }
+pallet-evm-precompile-modexp = { path = "../../vendors/frontier/frame/evm/precompile/modexp", default-features=false }
+pallet-evm-precompile-simple = { path = "../../vendors/frontier/frame/evm/precompile/simple", default-features=false }
+pallet-evm-precompile-sha3fips = { path = "../../vendors/frontier/frame/evm/precompile/sha3fips", default-features=false }
 
 [dev-dependencies]
 hex-literal = "0.3.1"
@@ -161,7 +176,21 @@ std = [
 	"sp-consensus-aura/std",
 	"node-primitives/std",
 	"parachains-common/std",
+
 	"pallet-sudo/std",
-	"pallet-studentid/std",
-	"pallet-subscription/std",
+	"pallet-bridge/std",
+	"pallet-bridge-transfer/std",
+	"pallet-vesting/std",
+	"pallet-custom-signatures/std",
+
+ 	"fp-rpc/std",
+    "fp-self-contained/std",
+	"pallet-base-fee/std",
+    "pallet-ethereum/std",
+    "pallet-evm/std",
+    "pallet-evm-precompile-simple/std",
+    "pallet-evm-precompile-bn128/std",
+    "pallet-evm-precompile-dispatch/std",
+    "pallet-evm-precompile-modexp/std",
+    "pallet-evm-precompile-sha3fips/std",
 ]

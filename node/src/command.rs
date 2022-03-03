@@ -17,20 +17,23 @@
 use crate::{
 	chain_spec,
 	cli::{Cli, RelayChainCli, Subcommand},
-	service::{new_partial, Block, IndracoreRuntimeExecutor, IndranetRuntimeExecutor},
+	service::{
+		build_import_queue, indracore, indranet, new_partial, start_indracore_node,
+		start_indranet_node,
+	},
 };
 use codec::Encode;
 use cumulus_client_service::genesis::generate_genesis_block;
 use cumulus_primitives_core::ParaId;
 use log::info;
-use parachains_common::AuraId;
+use parachains_common::Block;
 use sc_cli::{
 	ChainSpec, CliConfiguration, DefaultConfigurationValues, ImportParams, KeystoreParams,
 	NetworkParams, Result, RuntimeVersion, SharedParams, SubstrateCli,
 };
 use sc_service::{
 	config::{BasePath, PrometheusConfig},
-	TaskManager,
+	PartialComponents,
 };
 use selendra_parachain::primitives::AccountIdConversion;
 use sp_core::{crypto::Ss58AddressFormat, hexdisplay::HexDisplay};
@@ -187,31 +190,6 @@ fn extract_genesis_wasm(chain_spec: &Box<dyn sc_service::ChainSpec>) -> Result<V
 		.ok_or_else(|| "Could not find wasm file in genesis state!".into())
 }
 
-macro_rules! construct_async_run {
-	(|$components:ident, $cli:ident, $cmd:ident, $config:ident| $( $code:tt )* ) => {{
-		let runner = $cli.create_runner($cmd)?;
-		if runner.config().chain_spec.is_indranet() {
-			runner.async_run(|$config| {
-				let $components = new_partial::<indranet_runtime::RuntimeApi, IndranetRuntimeExecutor, _>(
-					&$config,
-					crate::service::indracore_build_import_queue::<_, _, AuraId>,
-				)?;
-				let task_manager = $components.task_manager;
-				{ $( $code )* }.map(|v| (v, task_manager))
-			})
-		} else {
-			runner.async_run(|$config| {
-				let $components = new_partial::<indracore_runtime::RuntimeApi, IndracoreRuntimeExecutor, _>(
-					&$config,
-					crate::service::indracore_build_import_queue::<_, _, AuraId>,
-				)?;
-				let task_manager = $components.task_manager;
-				{ $( $code )* }.map(|v| (v, task_manager))
-			})
-		}
-	}}
-}
-
 fn set_default_ss58_version() {
 	let ss58_version = Ss58AddressFormat::custom(972);
 	sp_core::crypto::set_default_ss58_version(ss58_version);
@@ -227,32 +205,100 @@ pub fn run() -> Result<()> {
 			runner.sync_run(|config| cmd.run(config.chain_spec, config.network))
 		},
 		Some(Subcommand::CheckBlock(cmd)) => {
+			let runner = cli.create_runner(cmd)?;
 			set_default_ss58_version();
-			construct_async_run!(|components, cli, cmd, config| {
-				Ok(cmd.run(components.client, components.import_queue))
-			})
+			if runner.config().chain_spec.is_indracore() {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, import_queue, .. } =
+						new_partial::<indracore::RuntimeApi, indracore::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				})
+			} else {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, import_queue, .. } =
+						new_partial::<indranet::RuntimeApi, indranet::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				})
+			}
 		},
 		Some(Subcommand::ExportBlocks(cmd)) => {
+			let runner = cli.create_runner(cmd)?;
 			set_default_ss58_version();
-			construct_async_run!(|components, cli, cmd, config| {
-				Ok(cmd.run(components.client, config.database))
-			})
+			if runner.config().chain_spec.is_indracore() {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, .. } =
+						new_partial::<indracore::RuntimeApi, indracore::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, config.database), task_manager))
+				})
+			} else {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, .. } =
+						new_partial::<indranet::RuntimeApi, indranet::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, config.database), task_manager))
+				})
+			}
 		},
 		Some(Subcommand::ExportState(cmd)) => {
+			let runner = cli.create_runner(cmd)?;
 			set_default_ss58_version();
-			construct_async_run!(|components, cli, cmd, config| {
-				Ok(cmd.run(components.client, config.chain_spec))
-			})
+			if runner.config().chain_spec.is_indracore() {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, .. } =
+						new_partial::<indracore::RuntimeApi, indracore::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, config.chain_spec), task_manager))
+				})
+			} else {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, .. } =
+						new_partial::<indranet::RuntimeApi, indranet::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, config.chain_spec), task_manager))
+				})
+			}
 		},
 		Some(Subcommand::ImportBlocks(cmd)) => {
+			let runner = cli.create_runner(cmd)?;
 			set_default_ss58_version();
-			construct_async_run!(|components, cli, cmd, config| {
-				Ok(cmd.run(components.client, components.import_queue))
-			})
+			if runner.config().chain_spec.is_indracore() {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, import_queue, .. } =
+						new_partial::<indracore::RuntimeApi, indracore::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				})
+			} else {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, import_queue, .. } =
+						new_partial::<indranet::RuntimeApi, indranet::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, import_queue), task_manager))
+				})
+			}
 		},
 		Some(Subcommand::PurgeChain(cmd)) => {
 			let runner = cli.create_runner(cmd)?;
-
+			set_default_ss58_version();
 			runner.sync_run(|config| {
 				let selendra_cli = RelayChainCli::new(
 					&config,
@@ -271,19 +317,38 @@ pub fn run() -> Result<()> {
 				cmd.run(config, selendra_config)
 			})
 		},
-		Some(Subcommand::Revert(cmd)) => construct_async_run!(|components, cli, cmd, config| {
+		Some(Subcommand::Revert(cmd)) => {
+			let runner = cli.create_runner(cmd)?;
 			set_default_ss58_version();
-			Ok(cmd.run(components.client, components.backend))
-		}),
+			if runner.config().chain_spec.is_indracore() {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, backend, .. } =
+						new_partial::<indracore::RuntimeApi, indracore::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, backend), task_manager))
+				})
+			} else {
+				runner.async_run(|config| {
+					let PartialComponents { client, task_manager, backend, .. } =
+						new_partial::<indranet::RuntimeApi, indranet::Executor, _>(
+							&config,
+							build_import_queue,
+						)?;
+					Ok((cmd.run(client, backend), task_manager))
+				})
+			}
+		},
 		Some(Subcommand::ExportGenesisState(params)) => {
 			let mut builder = sc_cli::LoggerBuilder::new("");
 			builder.with_profiling(sc_tracing::TracingReceiver::Log, "");
 			let _ = builder.init();
 
-			let spec = load_spec(&params.chain.clone().unwrap_or_default())?;
+			let spec = cli.load_spec(&params.chain.clone().unwrap_or_default())?;
 			let state_version = Cli::native_runtime_version(&spec).state_version();
 
-			let block: crate::service::Block = generate_genesis_block(&spec, state_version)?;
+			let block: Block = generate_genesis_block(&spec, state_version)?;
 			let raw_header = block.header().encode();
 			let output_buf = if params.raw {
 				raw_header
@@ -320,48 +385,66 @@ pub fn run() -> Result<()> {
 
 			Ok(())
 		},
+		Some(Subcommand::Key(cmd)) => cmd.run(&cli),
+		Some(Subcommand::Sign(cmd)) => cmd.run(),
+		Some(Subcommand::Verify(cmd)) => cmd.run(),
+		Some(Subcommand::Vanity(cmd)) => cmd.run(),
 		Some(Subcommand::Benchmark(cmd)) =>
 			if cfg!(feature = "runtime-benchmarks") {
 				let runner = cli.create_runner(cmd)?;
 				set_default_ss58_version();
-				if runner.config().chain_spec.is_indracore() {
-					runner.sync_run(|config| cmd.run::<Block, IndracoreRuntimeExecutor>(config))
-				} else if runner.config().chain_spec.is_indranet() {
-					runner.sync_run(|config| cmd.run::<Block, IndranetRuntimeExecutor>(config))
+				let chain_spec = &runner.config().chain_spec;
+
+				if chain_spec.is_indracore() {
+					runner.sync_run(|config| {
+						cmd.run::<indracore_runtime::Block, indracore::Executor>(config)
+					})
 				} else {
-					Err("Chain doesn't support benchmarking".into())
+					runner.sync_run(|config| {
+						cmd.run::<indranet_runtime::Block, indranet::Executor>(config)
+					})
 				}
 			} else {
 				Err("Benchmarking wasn't enabled when building the node. \
 				You can enable it with `--features runtime-benchmarks`."
 					.into())
 			},
-		Some(Subcommand::TryRuntime(cmd)) => {
+		Some(Subcommand::TryRuntime(cmd)) =>
 			if cfg!(feature = "try-runtime") {
-				// grab the task manager.
 				let runner = cli.create_runner(cmd)?;
 				set_default_ss58_version();
-				let registry = &runner.config().prometheus_config.as_ref().map(|cfg| &cfg.registry);
-				let task_manager =
-					TaskManager::new(runner.config().tokio_handle.clone(), *registry)
-						.map_err(|e| format!("Error: {:?}", e))?;
+				let chain_spec = &runner.config().chain_spec;
 
-				if runner.config().chain_spec.is_indracore() {
+				if chain_spec.is_indracore() {
 					runner.async_run(|config| {
-						Ok((cmd.run::<Block, IndracoreRuntimeExecutor>(config), task_manager))
-					})
-				} else if runner.config().chain_spec.is_indranet() {
-					runner.async_run(|config| {
-						Ok((cmd.run::<Block, IndranetRuntimeExecutor>(config), task_manager))
+						let registry = config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
+						let task_manager =
+							sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
+								.map_err(|e| {
+									sc_cli::Error::Service(sc_service::Error::Prometheus(e))
+								})?;
+						Ok((
+							cmd.run::<indracore_runtime::Block, indracore::Executor>(config),
+							task_manager,
+						))
 					})
 				} else {
-					Err("Chain doesn't support try-runtime".into())
+					runner.async_run(|config| {
+						let registry = config.prometheus_config.as_ref().map(|cfg| &cfg.registry);
+						let task_manager =
+							sc_service::TaskManager::new(config.tokio_handle.clone(), registry)
+								.map_err(|e| {
+									sc_cli::Error::Service(sc_service::Error::Prometheus(e))
+								})?;
+						Ok((
+							cmd.run::<indranet_runtime::Block, indranet::Executor>(config),
+							task_manager,
+						))
+					})
 				}
 			} else {
 				Err("Try-runtime must be enabled by `--features try-runtime`.".into())
-			}
-		},
-		Some(Subcommand::Key(cmd)) => Ok(cmd.run(&cli)?),
+			},
 		None => {
 			let runner = cli.create_runner(&cli.run.normalize())?;
 			set_default_ss58_version();
@@ -382,42 +465,33 @@ pub fn run() -> Result<()> {
 				let parachain_account =
 					AccountIdConversion::<selendra_primitives::v0::AccountId>::into_account(&id);
 
-				let state_version =
-					RelayChainCli::native_runtime_version(&config.chain_spec).state_version();
-
-				let block: crate::service::Block =
-					generate_genesis_block(&config.chain_spec, state_version)
-						.map_err(|e| format!("{:?}", e))?;
+				let state_version = Cli::native_runtime_version(&config.chain_spec).state_version();
+				let block: Block = generate_genesis_block(&config.chain_spec, state_version)
+					.map_err(|e| format!("{:?}", e))?;
 				let genesis_state = format!("0x{:?}", HexDisplay::from(&block.header().encode()));
 
-				let tokio_handle = config.tokio_handle.clone();
-				let selendra_config =
-					SubstrateCli::create_configuration(&selendra_cli, &selendra_cli, tokio_handle)
-						.map_err(|err| format!("Relay chain argument error: {}", err))?;
+				let selendra_config = SubstrateCli::create_configuration(
+					&selendra_cli,
+					&selendra_cli,
+					config.tokio_handle.clone(),
+				)
+				.map_err(|err| format!("Relay chain argument error: {}", err))?;
 
 				info!("Parachain id: {:?}", id);
 				info!("Parachain Account: {}", parachain_account);
 				info!("Parachain genesis state: {}", genesis_state);
 				info!("Is collating: {}", if config.role.is_authority() { "yes" } else { "no" });
 
-				if config.chain_spec.is_indranet() {
-					crate::service::start_indracore_node::<
-						indranet_runtime::RuntimeApi,
-						IndranetRuntimeExecutor,
-						AuraId,
-					>(config, selendra_config, id)
-					.await
-					.map(|r| r.0)
-					.map_err(Into::into)
+				if config.chain_spec.is_indracore() {
+					start_indracore_node(config, selendra_config, id)
+						.await
+						.map(|r| r.0)
+						.map_err(Into::into)
 				} else {
-					crate::service::start_indracore_node::<
-						indracore_runtime::RuntimeApi,
-						IndracoreRuntimeExecutor,
-						AuraId,
-					>(config, selendra_config, id)
-					.await
-					.map(|r| r.0)
-					.map_err(Into::into)
+					start_indranet_node(config, selendra_config, id)
+						.await
+						.map(|r| r.0)
+						.map_err(Into::into)
 				}
 			})
 		},

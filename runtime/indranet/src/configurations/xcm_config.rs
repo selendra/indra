@@ -16,7 +16,7 @@
 
 //! XCM configurations for Cardamom.
 
-use super::{
+use crate::{
 	AccountId, Balances, Call, Event, Origin, ParachainInfo, ParachainSystem, Runtime, SelendraXcm,
 	XcmpQueue,
 };
@@ -40,8 +40,8 @@ use xcm_builder::{
 use xcm_executor::{Config, XcmExecutor};
 
 parameter_types! {
-	pub const SelLocation: MultiLocation = MultiLocation::parent();
-	pub const RelayNetwork: NetworkId = NetworkId::Selendra;
+	pub const CardamomLocation: MultiLocation = MultiLocation::parent();
+	pub RelayNetwork: NetworkId = NetworkId::Named(b"Cardamom".to_vec());
 	pub RelayChainOrigin: Origin = cumulus_pallet_xcm::Origin::Relay.into();
 	pub Ancestry: MultiLocation = Parachain(ParachainInfo::parachain_id().into()).into();
 	pub const Local: MultiLocation = Here.into();
@@ -65,7 +65,7 @@ pub type CurrencyTransactor = CurrencyAdapter<
 	// Use this currency:
 	Balances,
 	// Use this currency when it is a fungible asset matching the given location or name:
-	IsConcrete<SelLocation>,
+	IsConcrete<CardamomLocation>,
 	// Convert an XCM MultiLocation into a local account id:
 	LocationToAccountId,
 	// Our chain's account ID type (we can't get away without mentioning it explicitly):
@@ -138,11 +138,11 @@ impl Config for XcmConfig {
 	type AssetTransactor = AssetTransactors;
 	type OriginConverter = XcmOriginToTransactDispatchOrigin;
 	type IsReserve = NativeAsset;
-	type IsTeleporter = NativeAsset; // <- should be enough to allow teleportation of SEL
+	type IsTeleporter = NativeAsset; // <- should be enough to allow teleportation of CDM
 	type LocationInverter = LocationInverter<Ancestry>;
 	type Barrier = Barrier;
 	type Weigher = FixedWeightBounds<UnitWeightCost, Call, MaxInstructions>;
-	type Trader = UsingComponents<IdentityFee<Balance>, SelLocation, AccountId, Balances, ()>;
+	type Trader = UsingComponents<IdentityFee<Balance>, CardamomLocation, AccountId, Balances, ()>;
 	type ResponseHandler = SelendraXcm;
 	type AssetTrap = SelendraXcm;
 	type AssetClaims = SelendraXcm;
@@ -153,8 +153,7 @@ parameter_types! {
 	pub const MaxDownwardMessageWeight: Weight = MAXIMUM_BLOCK_WEIGHT / 10;
 }
 
-/// Converts a local signed origin into an XCM multilocation.
-/// Forms the basis for local origins sending/executing XCMs.
+/// Local origins on this chain are allowed to dispatch XCM sends/executions.
 pub type LocalOriginToLocation = SignedToAccountId32<Origin, AccountId, RelayNetwork>;
 
 /// The means for routing XCM messages which are not for local execution into the right message
@@ -168,12 +167,9 @@ pub type XcmRouter = (
 
 impl pallet_xcm::Config for Runtime {
 	type Event = Event;
-	// We want to disallow users sending (arbitrary) XCMs from this chain.
 	type SendXcmOrigin = EnsureXcmOrigin<Origin, ()>;
 	type XcmRouter = XcmRouter;
-	// We support local origins dispatching XCM executions in principle...
 	type ExecuteXcmOrigin = EnsureXcmOrigin<Origin, LocalOriginToLocation>;
-	// ... but disallow generic XCM execution. As a result only teleports and reserve transfers are allowed.
 	type XcmExecuteFilter = Nothing;
 	type XcmExecutor = XcmExecutor<XcmConfig>;
 	type XcmTeleportFilter = Everything;

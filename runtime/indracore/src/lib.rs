@@ -428,9 +428,40 @@ impl pallet_vesting::Config for Runtime {
 	type Currency = pallet_balances::Pallet<Runtime>;
 	type MinVestedTransfer = MinVestedTransfer;
 	type VestedTransferOrigin = frame_system::EnsureSigned<AccountId>;
-	type WeightInfo = weights::pallet_vesting::WeightInfo<Runtime>;
+	type WeightInfo = ();
 	type MaxVestingSchedules = MaxVestingSchedules;
 	type BlockNumberProvider = frame_system::Pallet<Runtime>;
+}
+
+parameter_types! {
+	pub const BridgeChainId: u8 = 2;
+	pub const ProposalLifetime: BlockNumber = 50;
+}
+
+/// We allow root and the Relay Chain council to execute privileged collator selection operations.
+pub type BridgeOrigin = EnsureOneOf<
+	EnsureRoot<AccountId>,
+	EnsureXcm<IsMajorityOfBody<xcm_config::SelLocation, ExecutiveBody>>,
+>;
+
+impl pallet_bridge::Config for Runtime {
+	type Event = Event;
+	type BridgeCommitteeOrigin = BridgeOrigin;
+	type Proposal = Call;
+	type BridgeChainId = BridgeChainId;
+	type ProposalLifetime = ProposalLifetime;
+}
+
+parameter_types! {
+	pub const NativeTokenResourceId: [u8; 32] = hex_literal::hex!("0000000000000000000000884176A5FD48bC9478e3D1E92A077780C4Cf95Ab04");
+}
+
+impl pallet_bridge_transfer::Config for Runtime {
+	type Event = Event;
+	type BridgeOrigin = pallet_bridge::EnsureBridge<Runtime>;
+	type Currency = Balances;
+	type NativeTokenResourceId = NativeTokenResourceId;
+	type OnFeePay = ();
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -477,6 +508,10 @@ construct_runtime!(
 		Ethereum: pallet_ethereum::{Pallet, Call, Storage, Event, Origin, Config} = 61,
 		EthCall: pallet_custom_signatures::{Pallet, Call, Event<T>, ValidateUnsigned} = 62,
 		BaseFee: pallet_base_fee::{Pallet, Call, Storage, Config<T>, Event} = 63,
+
+		//bridge
+		ChainBridge: pallet_bridge::{Pallet, Call, Storage, Event<T>} = 70,
+		BridgeTransfer: pallet_bridge_transfer::{Pallet, Call, Event<T>, Storage} = 71,
 
 		// Sudo.
 		Sudo: pallet_sudo::{Pallet, Call, Storage, Event<T>, Config<T>} = 100,

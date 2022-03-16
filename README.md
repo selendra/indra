@@ -170,6 +170,22 @@ Now that you have two relay chain nodes, and a parachain node accompanied with a
 
 The collator node may need to be restarted to get it functioning as expected. After a new epoch starts on the relay chain, your parachain will come online. Once this happens, you should see the collator start reporting parachain blocks.
 
+### Perform Runtime upgade
+
+We need to inform the relay chain we will be running an upgrade, so we send them a hash of our wasm blob via a sudo extrinsic call from our parachain
+
+```sh
+sudo > parachainSystem > enactAuthorize
+```
+
+Once that has been submitted correctly then:
+
+```sh
+Extrinsics > parachainSystem > enactAuthorizedUpgrade
+```
+
+If you increased the spec version, you will see the new spec version in the top left of your polkadot-js apps UI screen.
+
 ## License
 
 Selendra-parachain is implement from [Cumulus](https://github.com/paritytech/cumulus.git) under license [GPL 3.0 licensed](LICENSE-GPL3).

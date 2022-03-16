@@ -86,7 +86,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("indranet"),
 	impl_name: create_runtime_str!("indranet"),
 	authoring_version: 1,
-	spec_version: 001,
+	spec_version: 002,
 	impl_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 4,
@@ -453,7 +453,7 @@ impl pallet_bridge::Config for Runtime {
 }
 
 parameter_types! {
-	pub const NativeTokenResourceId: [u8; 32] = hex_literal::hex!("00000000000000000000003f7BB17579e4550eE971F26dEeB0D888d1C331ce04");
+	pub const NativeTokenResourceId: [u8; 32] = hex_literal::hex!("0000000000000000000000Dd030D6a093B75972aF6B458Af84eA09384Db5D704");
 }
 
 impl pallet_bridge_transfer::Config for Runtime {

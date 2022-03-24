@@ -22,27 +22,26 @@ mod overrides;
 
 pub mod format;
 
-pub use eth::{
-	EthApi, EthApiServer, EthBlockDataCache, EthFilterApi, EthFilterApiServer, EthTask, NetApi,
-	NetApiServer, Web3Api, Web3ApiServer,
-};
-pub use eth_pubsub::{EthPubSubApi, EthPubSubApiServer, HexEncodedIdProvider};
-pub use ethereum::TransactionV2 as EthereumTransaction;
-pub use overrides::{
-	OverrideHandle, RuntimeApiStorageOverride, SchemaV1Override, SchemaV2Override,
-	SchemaV3Override, StorageOverride,
+pub use self::{
+	eth::{
+		EthApi, EthApiServer, EthBlockDataCache, EthFilterApi, EthFilterApiServer, EthTask, NetApi,
+		NetApiServer, Web3Api, Web3ApiServer,
+	},
+	eth_pubsub::{EthPubSubApi, EthPubSubApiServer, HexEncodedIdProvider},
+	overrides::{
+		OverrideHandle, RuntimeApiStorageOverride, SchemaV1Override, SchemaV2Override,
+		SchemaV3Override, StorageOverride,
+	},
 };
 
+pub use ethereum::TransactionV2 as EthereumTransaction;
 use ethereum_types::{H160, H256};
-use evm::ExitError;
+use evm::{ExitError, ExitReason};
 pub use fc_rpc_core::types::TransactionMessage;
 use jsonrpc_core::{Error, ErrorCode, Value};
-use pallet_evm::ExitReason;
-use rustc_hex::ToHex;
 use sha3::{Digest, Keccak256};
 
 pub mod frontier_backend_client {
-
 	use super::internal_err;
 
 	use fc_rpc_core::types::BlockNumber;
@@ -57,7 +56,7 @@ pub mod frontier_backend_client {
 	use jsonrpc_core::Result as RpcResult;
 
 	use ethereum_types::H256;
-	use pallet_ethereum::EthereumStorageSchema;
+	use fp_storage::EthereumStorageSchema;
 
 	pub fn native_block_id<B: BlockT, C>(
 		client: &C,
@@ -93,7 +92,7 @@ pub mod frontier_backend_client {
 			.map_err(|err| internal_err(format!("fetch aux store failed: {:?}", err)))?;
 
 		if let Some(substrate_hash) = substrate_hash {
-			return Ok(Some(BlockId::Hash(substrate_hash)))
+			return Ok(Some(BlockId::Hash(substrate_hash)));
 		}
 		Ok(None)
 	}
@@ -156,7 +155,7 @@ pub mod frontier_backend_client {
 	{
 		if let Ok(Some(number)) = client.number(target_hash) {
 			if let Ok(Some(header)) = client.header(BlockId::Number(number)) {
-				return header.hash() == target_hash
+				return header.hash() == target_hash;
 			}
 		}
 		false
@@ -199,7 +198,11 @@ pub mod frontier_backend_client {
 }
 
 pub fn internal_err<T: ToString>(message: T) -> Error {
-	Error { code: ErrorCode::InternalError, message: message.to_string(), data: None }
+	Error {
+		code: ErrorCode::InternalError,
+		message: message.to_string(),
+		data: None,
+	}
 }
 
 pub fn error_on_execution_failure(reason: &ExitReason, data: &[u8]) -> Result<(), Error> {
@@ -212,14 +215,14 @@ pub fn error_on_execution_failure(reason: &ExitReason, data: &[u8]) -> Result<()
 					code: ErrorCode::ServerError(0),
 					message: format!("out of gas"),
 					data: None,
-				})
+				});
 			}
 			Err(Error {
 				code: ErrorCode::InternalError,
 				message: format!("evm error: {:?}", e),
 				data: Some(Value::String("0x".to_string())),
 			})
-		},
+		}
 		ExitReason::Revert(_) => {
 			let mut message = "VM Exception while processing transaction: revert".to_string();
 			// A minimum size of error function selector (4) + offset (32) + string length (32)
@@ -236,9 +239,9 @@ pub fn error_on_execution_failure(reason: &ExitReason, data: &[u8]) -> Result<()
 			Err(Error {
 				code: ErrorCode::InternalError,
 				message,
-				data: Some(Value::String(data.to_hex())),
+				data: Some(Value::String(hex::encode(data))),
 			})
-		},
+		}
 		ExitReason::Fatal(e) => Err(Error {
 			code: ErrorCode::InternalError,
 			message: format!("evm fatal: {:?}", e),
@@ -256,19 +259,19 @@ pub fn public_key(transaction: &EthereumTransaction) -> Result<[u8; 64], sp_io::
 			sig[32..64].copy_from_slice(&t.signature.s()[..]);
 			sig[64] = t.signature.standard_v();
 			msg.copy_from_slice(&ethereum::LegacyTransactionMessage::from(t.clone()).hash()[..]);
-		},
+		}
 		EthereumTransaction::EIP2930(t) => {
 			sig[0..32].copy_from_slice(&t.r[..]);
 			sig[32..64].copy_from_slice(&t.s[..]);
 			sig[64] = t.odd_y_parity as u8;
 			msg.copy_from_slice(&ethereum::EIP2930TransactionMessage::from(t.clone()).hash()[..]);
-		},
+		}
 		EthereumTransaction::EIP1559(t) => {
 			sig[0..32].copy_from_slice(&t.r[..]);
 			sig[32..64].copy_from_slice(&t.s[..]);
 			sig[64] = t.odd_y_parity as u8;
 			msg.copy_from_slice(&ethereum::EIP1559TransactionMessage::from(t.clone()).hash()[..]);
-		},
+		}
 	}
 	sp_io::crypto::secp256k1_ecdsa_recover(&sig, &msg)
 }
@@ -286,13 +289,13 @@ pub trait EthSigner: Send + Sync {
 }
 
 pub struct EthDevSigner {
-	keys: Vec<secp256k1::SecretKey>,
+	keys: Vec<libsecp256k1::SecretKey>,
 }
 
 impl EthDevSigner {
 	pub fn new() -> Self {
 		Self {
-			keys: vec![secp256k1::SecretKey::parse(&[
+			keys: vec![libsecp256k1::SecretKey::parse(&[
 				0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11,
 				0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11, 0x11,
 				0x11, 0x11, 0x11, 0x11,
@@ -307,7 +310,7 @@ impl EthSigner for EthDevSigner {
 		self.keys
 			.iter()
 			.map(|secret| {
-				let public = secp256k1::PublicKey::from_secret_key(secret);
+				let public = libsecp256k1::PublicKey::from_secret_key(secret);
 				let mut res = [0u8; 64];
 				res.copy_from_slice(&public.serialize()[1..65]);
 
@@ -325,7 +328,7 @@ impl EthSigner for EthDevSigner {
 
 		for secret in &self.keys {
 			let key_address = {
-				let public = secp256k1::PublicKey::from_secret_key(secret);
+				let public = libsecp256k1::PublicKey::from_secret_key(secret);
 				let mut res = [0u8; 64];
 				res.copy_from_slice(&public.serialize()[1..65]);
 				H160::from(H256::from_slice(Keccak256::digest(&res).as_slice()))
@@ -334,9 +337,9 @@ impl EthSigner for EthDevSigner {
 			if &key_address == address {
 				match message {
 					TransactionMessage::Legacy(m) => {
-						let signing_message = secp256k1::Message::parse_slice(&m.hash()[..])
+						let signing_message = libsecp256k1::Message::parse_slice(&m.hash()[..])
 							.map_err(|_| internal_err("invalid signing message"))?;
-						let (signature, recid) = secp256k1::sign(&signing_message, secret);
+						let (signature, recid) = libsecp256k1::sign(&signing_message, secret);
 						let v = match m.chain_id {
 							None => 27 + recid.serialize() as u64,
 							Some(chain_id) => 2 * chain_id + 35 + recid.serialize() as u64,
@@ -355,11 +358,11 @@ impl EthSigner for EthDevSigner {
 								signature: ethereum::TransactionSignature::new(v, r, s)
 									.ok_or(internal_err("signer generated invalid signature"))?,
 							}));
-					},
+					}
 					TransactionMessage::EIP2930(m) => {
-						let signing_message = secp256k1::Message::parse_slice(&m.hash()[..])
+						let signing_message = libsecp256k1::Message::parse_slice(&m.hash()[..])
 							.map_err(|_| internal_err("invalid signing message"))?;
-						let (signature, recid) = secp256k1::sign(&signing_message, secret);
+						let (signature, recid) = libsecp256k1::sign(&signing_message, secret);
 						let rs = signature.serialize();
 						let r = H256::from_slice(&rs[0..32]);
 						let s = H256::from_slice(&rs[32..64]);
@@ -377,11 +380,11 @@ impl EthSigner for EthDevSigner {
 								r,
 								s,
 							}));
-					},
+					}
 					TransactionMessage::EIP1559(m) => {
-						let signing_message = secp256k1::Message::parse_slice(&m.hash()[..])
+						let signing_message = libsecp256k1::Message::parse_slice(&m.hash()[..])
 							.map_err(|_| internal_err("invalid signing message"))?;
-						let (signature, recid) = secp256k1::sign(&signing_message, secret);
+						let (signature, recid) = libsecp256k1::sign(&signing_message, secret);
 						let rs = signature.serialize();
 						let r = H256::from_slice(&rs[0..32]);
 						let s = H256::from_slice(&rs[32..64]);
@@ -400,9 +403,9 @@ impl EthSigner for EthDevSigner {
 								r,
 								s,
 							}));
-					},
+					}
 				}
-				break
+				break;
 			}
 		}
 

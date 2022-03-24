@@ -18,6 +18,7 @@ use std::collections::BTreeMap;
 use ethereum::BlockV2 as EthereumBlock;
 use ethereum_types::{H160, H256, U256};
 use fp_rpc::{EthereumRuntimeRPCApi, TransactionStatus};
+use fp_storage::EthereumStorageSchema;
 use sp_api::{ApiExt, BlockId, ProvideRuntimeApi};
 use sp_io::hashing::{blake2_128, twox_128};
 use sp_runtime::{traits::Block as BlockT, Permill};
@@ -28,7 +29,6 @@ mod schema_v2_override;
 mod schema_v3_override;
 
 pub use fc_rpc_core::{EthApiServer, NetApiServer};
-use pallet_ethereum::EthereumStorageSchema;
 pub use schema_v1_override::SchemaV1Override;
 pub use schema_v2_override::SchemaV2Override;
 pub use schema_v3_override::SchemaV3Override;
@@ -90,7 +90,10 @@ where
 	C: Send + Sync + 'static,
 {
 	pub fn new(client: Arc<C>) -> Self {
-		Self { client, _marker: PhantomData }
+		Self {
+			client,
+			_marker: PhantomData,
+		}
 	}
 }
 
@@ -103,12 +106,18 @@ where
 {
 	/// For a given account address, returns pallet_evm::AccountCodes.
 	fn account_code_at(&self, block: &BlockId<Block>, address: H160) -> Option<Vec<u8>> {
-		self.client.runtime_api().account_code_at(&block, address).ok()
+		self.client
+			.runtime_api()
+			.account_code_at(&block, address)
+			.ok()
 	}
 
 	/// For a given account address and index, returns pallet_evm::AccountStorages.
 	fn storage_at(&self, block: &BlockId<Block>, address: H160, index: U256) -> Option<H256> {
-		self.client.runtime_api().storage_at(&block, address, index).ok()
+		self.client
+			.runtime_api()
+			.storage_at(&block, address, index)
+			.ok()
 	}
 
 	/// Return the current block.
@@ -120,7 +129,7 @@ where
 		{
 			api_version
 		} else {
-			return None
+			return None;
 		};
 		if api_version == 1 {
 			#[allow(deprecated)]
@@ -144,7 +153,7 @@ where
 		{
 			api_version
 		} else {
-			return None
+			return None;
 		};
 		if api_version < 4 {
 			#[allow(deprecated)]
@@ -176,7 +185,10 @@ where
 		&self,
 		block: &BlockId<Block>,
 	) -> Option<Vec<TransactionStatus>> {
-		self.client.runtime_api().current_transaction_statuses(&block).ok()?
+		self.client
+			.runtime_api()
+			.current_transaction_statuses(&block)
+			.ok()?
 	}
 
 	/// Return the base fee at the given post-eip1559 height.
@@ -203,8 +215,8 @@ where
 			.runtime_api()
 			.api_version::<dyn EthereumRuntimeRPCApi<Block>>(&block)
 		{
-			return api_version >= 2
+			return api_version >= 2;
 		}
-		return false
+		return false;
 	}
 }

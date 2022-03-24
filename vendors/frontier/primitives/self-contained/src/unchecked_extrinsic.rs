@@ -1,18 +1,19 @@
-use crate::{CheckedExtrinsic, CheckedSignature, SelfContainedCall};
-use codec::{Decode, Encode};
 use frame_support::{
+	codec::{Decode, Encode},
+	scale_info::TypeInfo,
 	traits::ExtrinsicCall,
 	weights::{DispatchInfo, GetDispatchInfo},
 };
-use scale_info::TypeInfo;
 use sp_runtime::{
 	traits::{
 		self, Checkable, Extrinsic, ExtrinsicMetadata, IdentifyAccount, MaybeDisplay, Member,
 		SignedExtension,
 	},
 	transaction_validity::{InvalidTransaction, TransactionValidityError},
-	RuntimeDebug,
+	OpaqueExtrinsic, RuntimeDebug,
 };
+
+use crate::{CheckedExtrinsic, CheckedSignature, SelfContainedCall};
 
 /// A extrinsic right from the external world. This is unchecked and so
 /// can contain a signature.
@@ -44,7 +45,9 @@ impl<Address, Call, Signature, Extra: SignedExtension>
 
 	/// New instance of an unsigned extrinsic aka "inherent".
 	pub fn new_unsigned(function: Call) -> Self {
-		Self(sp_runtime::generic::UncheckedExtrinsic::new_unsigned(function))
+		Self(sp_runtime::generic::UncheckedExtrinsic::new_unsigned(
+			function,
+		))
 	}
 }
 
@@ -85,14 +88,14 @@ where
 	fn check(self, lookup: &Lookup) -> Result<Self::Checked, TransactionValidityError> {
 		if self.0.function.is_self_contained() {
 			if self.0.signature.is_some() {
-				return Err(TransactionValidityError::Invalid(InvalidTransaction::BadProof))
+				return Err(TransactionValidityError::Invalid(
+					InvalidTransaction::BadProof,
+				));
 			}
 
-			let signed_info = self
-				.0
-				.function
-				.check_self_contained()
-				.ok_or(TransactionValidityError::Invalid(InvalidTransaction::BadProof))??;
+			let signed_info = self.0.function.check_self_contained().ok_or(
+				TransactionValidityError::Invalid(InvalidTransaction::BadProof),
+			)??;
 			Ok(CheckedExtrinsic {
 				signed: CheckedSignature::SelfContained(signed_info),
 				function: self.0.function,
@@ -161,5 +164,18 @@ impl<'a, Address: Decode, Signature: Decode, Call: Decode, Extra: SignedExtensio
 	{
 		<sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>>::deserialize(de)
 			.map(Self)
+	}
+}
+
+impl<Address, Call, Signature, Extra> From<UncheckedExtrinsic<Address, Call, Signature, Extra>>
+	for OpaqueExtrinsic
+where
+	Address: Encode,
+	Signature: Encode,
+	Call: Encode,
+	Extra: SignedExtension,
+{
+	fn from(extrinsic: UncheckedExtrinsic<Address, Call, Signature, Extra>) -> Self {
+		extrinsic.0.into()
 	}
 }

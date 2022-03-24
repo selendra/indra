@@ -15,8 +15,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::SelfContainedCall;
 use frame_support::weights::{DispatchInfo, GetDispatchInfo};
+use sp_debug_derive::RuntimeDebug;
 use sp_runtime::{
 	traits::{
 		self, DispatchInfoOf, Dispatchable, MaybeDisplay, Member, PostDispatchInfoOf,
@@ -27,7 +27,9 @@ use sp_runtime::{
 	},
 };
 
-#[derive(PartialEq, Eq, Clone, sp_core::RuntimeDebug)]
+use crate::SelfContainedCall;
+
+#[derive(PartialEq, Eq, Clone, RuntimeDebug)]
 pub enum CheckedSignature<AccountId, Extra, SelfContainedSignedInfo> {
 	Signed(AccountId, Extra),
 	Unsigned,
@@ -37,7 +39,7 @@ pub enum CheckedSignature<AccountId, Extra, SelfContainedSignedInfo> {
 /// Definition of something that the external world might want to say; its
 /// existence implies that it has been checked and is good, particularly with
 /// regards to the signature.
-#[derive(PartialEq, Eq, Clone, sp_core::RuntimeDebug)]
+#[derive(PartialEq, Eq, Clone, RuntimeDebug)]
 pub struct CheckedExtrinsic<AccountId, Call, Extra, SelfContainedSignedInfo> {
 	/// Who this purports to be from and the number of extrinsics have come before
 	/// from the same signer, if anyone (note this is not a signature).
@@ -77,17 +79,19 @@ where
 		len: usize,
 	) -> TransactionValidity {
 		match &self.signed {
-			CheckedSignature::Signed(id, extra) =>
-				Extra::validate(extra, id, &self.function, info, len),
+			CheckedSignature::Signed(id, extra) => {
+				Extra::validate(extra, id, &self.function, info, len)
+			}
 			CheckedSignature::Unsigned => {
 				let valid = Extra::validate_unsigned(&self.function, info, len)?;
 				let unsigned_validation = U::validate_unsigned(source, &self.function)?;
 				Ok(valid.combine_with(unsigned_validation))
-			},
-			CheckedSignature::SelfContained(signed_info) => self
-				.function
-				.validate_self_contained(&signed_info)
-				.ok_or(TransactionValidityError::Invalid(InvalidTransaction::BadProof))?,
+			}
+			CheckedSignature::SelfContained(signed_info) => {
+				self.function.validate_self_contained(&signed_info).ok_or(
+					TransactionValidityError::Invalid(InvalidTransaction::BadProof),
+				)?
+			}
 		}
 	}
 
@@ -113,9 +117,9 @@ where
 					&res.map(|_| ()).map_err(|e| e.error),
 				)?;
 				Ok(res)
-			},
+			}
 			CheckedSignature::Unsigned => {
-				Extra::pre_dispatch_unsigned(&self.function, info, len)?;
+				let _pre = Extra::pre_dispatch_unsigned(&self.function, info, len)?;
 				U::pre_dispatch(&self.function)?;
 				let maybe_who = None;
 				let res = self.function.dispatch(Origin::from(maybe_who));
@@ -131,17 +135,18 @@ where
 					&res.map(|_| ()).map_err(|e| e.error),
 				)?;
 				Ok(res)
-			},
+			}
 			CheckedSignature::SelfContained(signed_info) => {
 				// If pre-dispatch fail, the block must be considered invalid
 				self.function
 					.pre_dispatch_self_contained(&signed_info)
-					.ok_or(TransactionValidityError::Invalid(InvalidTransaction::BadProof))??;
-				Ok(self
-					.function
-					.apply_self_contained(signed_info)
-					.ok_or(TransactionValidityError::Invalid(InvalidTransaction::BadProof))?)
-			},
+					.ok_or(TransactionValidityError::Invalid(
+						InvalidTransaction::BadProof,
+					))??;
+				Ok(self.function.apply_self_contained(signed_info).ok_or(
+					TransactionValidityError::Invalid(InvalidTransaction::BadProof),
+				)?)
+			}
 		}
 	}
 }

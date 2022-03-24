@@ -23,18 +23,26 @@
 // Ensure we're `no_std` when compiling for Wasm.
 #![cfg_attr(not(feature = "std"), no_std)]
 
-use codec::{Decode, Encode};
+#[cfg(all(feature = "std", test))]
+mod mock;
+#[cfg(all(feature = "std", test))]
+mod tests;
+
 use ethereum_types::{Bloom, BloomInput, H160, H256, H64, U256};
 use evm::ExitReason;
 use fp_consensus::{PostLog, PreLog, FRONTIER_ENGINE_ID};
 use fp_evm::CallOrCreateInfo;
-use fp_storage::PALLET_ETHEREUM_SCHEMA;
+use fp_storage::{EthereumStorageSchema, PALLET_ETHEREUM_SCHEMA};
+#[cfg(feature = "try-runtime")]
+use frame_support::traits::OnRuntimeUpgradeHelpersExt;
 use frame_support::{
+	codec::{Decode, Encode},
 	dispatch::DispatchResultWithPostInfo,
-	traits::{EnsureOrigin, Get},
+	scale_info::TypeInfo,
+	traits::{EnsureOrigin, Get, PalletInfoAccess},
 	weights::{Pays, PostDispatchInfo, Weight},
 };
-use frame_system::pallet_prelude::OriginFor;
+use frame_system::{pallet_prelude::OriginFor, WeightInfo};
 use pallet_evm::{BlockHashMapping, FeeCalculator, GasWeightMapping, Runner};
 use sha3::{Digest, Keccak256};
 use sp_runtime::{
@@ -49,16 +57,11 @@ use sp_std::{marker::PhantomData, prelude::*};
 
 pub use ethereum::{
 	AccessListItem, BlockV2 as Block, LegacyTransactionMessage, Log, ReceiptV3 as Receipt,
-	TransactionAction, TransactionV0 as LegacyTransaction, TransactionV2 as Transaction,
+	TransactionAction, TransactionV2 as Transaction,
 };
 pub use fp_rpc::TransactionStatus;
 
-#[cfg(all(feature = "std", test))]
-mod mock;
-#[cfg(all(feature = "std", test))]
-mod tests;
-
-#[derive(PartialEq, Eq, Clone, Encode, Decode, RuntimeDebug, scale_info::TypeInfo)]
+#[derive(PartialEq, Eq, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
 pub enum RawOrigin {
 	EthereumTransaction(H160),
 }
@@ -136,7 +139,10 @@ where
 		origin: &H160,
 	) -> Option<Result<(), TransactionValidityError>> {
 		if let Call::transact { transaction } = self {
-			Some(Pallet::<T>::validate_transaction_in_block(*origin, &transaction))
+			Some(Pallet::<T>::validate_transaction_in_block(
+				*origin,
+				&transaction,
+			))
 		} else {
 			None
 		}
@@ -144,14 +150,17 @@ where
 
 	pub fn validate_self_contained(&self, origin: &H160) -> Option<TransactionValidity> {
 		if let Call::transact { transaction } = self {
-			Some(Pallet::<T>::validate_transaction_in_pool(*origin, transaction))
+			Some(Pallet::<T>::validate_transaction_in_pool(
+				*origin,
+				transaction,
+			))
 		} else {
 			None
 		}
 	}
 }
 
-pub use pallet::*;
+pub use self::pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -160,12 +169,7 @@ pub mod pallet {
 	use frame_system::pallet_prelude::*;
 
 	#[pallet::config]
-	pub trait Config:
-		frame_system::Config
-		+ pallet_balances::Config
-		+ pallet_timestamp::Config
-		+ pallet_evm::Config
-	{
+	pub trait Config: frame_system::Config + pallet_timestamp::Config + pallet_evm::Config {
 		/// The overarching event type.
 		type Event: From<Event> + IsType<<Self as frame_system::Config>::Event>;
 		/// How Ethereum state root is calculated.
@@ -191,7 +195,9 @@ pub mod pallet {
 			);
 			// move block hash pruning window by one block
 			let block_hash_count = T::BlockHashCount::get();
-			let to_remove = n.saturating_sub(block_hash_count).saturating_sub(One::one());
+			let to_remove = n
+				.saturating_sub(block_hash_count)
+				.saturating_sub(One::one());
 			// keep genesis hash
 			if !to_remove.is_zero() {
 				<BlockHash<T>>::remove(U256::from(
@@ -202,6 +208,7 @@ pub mod pallet {
 
 		fn on_initialize(_: T::BlockNumber) -> Weight {
 			Pending::<T>::kill();
+			let mut weight = T::SystemWeightInfo::kill_storage(1);
 
 			// If the digest contain an existing ethereum block(encoded as PreLog), If contains,
 			// execute the imported block firstly and disable transact dispatch function.
@@ -216,11 +223,16 @@ pub mod pallet {
 					Self::validate_transaction_in_block(source, &transaction).expect(
 						"pre-block transaction verification failed; the block cannot be built",
 					);
-					Self::apply_validated_transaction(source, transaction);
+					let r = Self::apply_validated_transaction(source, transaction);
+					weight = weight.saturating_add(r.actual_weight.unwrap_or(0 as Weight));
 				}
 			}
-
-			0
+			// Account for `on_finalize` weight:
+			//	- read: frame_system::Pallet::<T>::digest()
+			//	- read: frame_system::Pallet::<T>::block_number()
+			//	- write: <Pallet<T>>::store_block()
+			//	- write: <BlockHash<T>>::remove()
+			weight.saturating_add(T::DbWeight::get().reads_writes(2, 2))
 		}
 
 		fn on_runtime_upgrade() -> Weight {
@@ -229,7 +241,7 @@ pub mod pallet {
 				&EthereumStorageSchema::V3,
 			);
 
-			0
+			T::DbWeight::get().write
 		}
 	}
 
@@ -370,7 +382,7 @@ impl<T: Config> Pallet<T> {
 				msg.copy_from_slice(
 					&ethereum::LegacyTransactionMessage::from(t.clone()).hash()[..],
 				);
-			},
+			}
 			Transaction::EIP2930(t) => {
 				sig[0..32].copy_from_slice(&t.r[..]);
 				sig[32..64].copy_from_slice(&t.s[..]);
@@ -378,7 +390,7 @@ impl<T: Config> Pallet<T> {
 				msg.copy_from_slice(
 					&ethereum::EIP2930TransactionMessage::from(t.clone()).hash()[..],
 				);
-			},
+			}
 			Transaction::EIP1559(t) => {
 				sig[0..32].copy_from_slice(&t.r[..]);
 				sig[32..64].copy_from_slice(&t.s[..]);
@@ -386,10 +398,12 @@ impl<T: Config> Pallet<T> {
 				msg.copy_from_slice(
 					&ethereum::EIP1559TransactionMessage::from(t.clone()).hash()[..],
 				);
-			},
+			}
 		}
 		let pubkey = sp_io::crypto::secp256k1_ecdsa_recover(&sig, &msg).ok()?;
-		Some(H160::from(H256::from_slice(Keccak256::digest(&pubkey).as_slice())))
+		Some(H160::from(H256::from_slice(
+			Keccak256::digest(&pubkey).as_slice(),
+		)))
 	}
 
 	fn store_block(post_log: bool, block_number: U256) {
@@ -403,8 +417,9 @@ impl<T: Config> Pallet<T> {
 			statuses.push(status);
 			receipts.push(receipt.clone());
 			let (logs, used_gas) = match receipt {
-				Receipt::Legacy(d) | Receipt::EIP2930(d) | Receipt::EIP1559(d) =>
-					(d.logs.clone(), d.used_gas),
+				Receipt::Legacy(d) | Receipt::EIP2930(d) | Receipt::EIP1559(d) => {
+					(d.logs.clone(), d.used_gas)
+				}
 			};
 			cumulative_gas_used = used_gas;
 			Self::logs_bloom(logs, &mut logs_bloom);
@@ -415,7 +430,7 @@ impl<T: Config> Pallet<T> {
 			ethereum::util::ordered_trie_root(receipts.iter().map(|r| rlp::encode(r)));
 		let partial_header = ethereum::PartialHeader {
 			parent_hash: if block_number > U256::zero() {
-				BlockHash::<T>::get(U256::from(block_number - 1))
+				BlockHash::<T>::get(block_number - 1)
 			} else {
 				H256::default()
 			},
@@ -485,9 +500,10 @@ impl<T: Config> Pallet<T> {
 			),
 		};
 		if gasometer.record_transaction(transaction_cost).is_err() {
-			return Err(
-				InvalidTransaction::Custom(TransactionValidationError::GasLimitTooLow as u8).into()
+			return Err(InvalidTransaction::Custom(
+				TransactionValidationError::GasLimitTooLow as u8,
 			)
+			.into());
 		}
 
 		if let Some(chain_id) = transaction_data.chain_id {
@@ -495,7 +511,7 @@ impl<T: Config> Pallet<T> {
 				return Err(InvalidTransaction::Custom(
 					TransactionValidationError::InvalidChainId as u8,
 				)
-				.into())
+				.into());
 			}
 		}
 
@@ -503,7 +519,16 @@ impl<T: Config> Pallet<T> {
 			return Err(InvalidTransaction::Custom(
 				TransactionValidationError::GasLimitTooHigh as u8,
 			)
-			.into())
+			.into());
+		}
+
+		let account_data = pallet_evm::Pallet::<T>::account_basic(&origin);
+
+		if account_data.balance < transaction_data.value {
+			return Err(InvalidTransaction::Custom(
+				TransactionValidationError::InsufficientFundsForTransfer as u8,
+			)
+			.into());
 		}
 
 		let base_fee = T::FeeCalculator::min_gas_price();
@@ -519,11 +544,11 @@ impl<T: Config> Pallet<T> {
 			// EIP-1559 transactions.
 			max_fee_per_gas
 		} else {
-			return Err(InvalidTransaction::Payment.into())
+			return Err(InvalidTransaction::Payment.into());
 		};
 
 		if gas_price < base_fee {
-			return Err(InvalidTransaction::Payment.into())
+			return Err(InvalidTransaction::Payment.into());
 		}
 
 		let mut fee = gas_price.saturating_mul(gas_limit);
@@ -541,11 +566,11 @@ impl<T: Config> Pallet<T> {
 			return Err(InvalidTransaction::Custom(
 				TransactionValidationError::InsufficientFundsForTransfer as u8,
 			)
-			.into())
+			.into());
 		}
 		let total_payment = transaction_data.value.saturating_add(fee);
 		if account_data.balance < total_payment {
-			return Err(InvalidTransaction::Payment.into())
+			return Err(InvalidTransaction::Payment.into());
 		}
 
 		Ok((account_data.nonce, priority))
@@ -565,7 +590,7 @@ impl<T: Config> Pallet<T> {
 			Self::validate_transaction_common(origin, &transaction_data)?;
 
 		if transaction_nonce < account_nonce {
-			return Err(InvalidTransaction::Stale.into())
+			return Err(InvalidTransaction::Stale.into());
 		}
 
 		// The tag provides and requires must be filled correctly according to the nonce.
@@ -640,8 +665,9 @@ impl<T: Config> Pallet<T> {
 			let logs = status.clone().logs;
 			let cumulative_gas_used = if let Some((_, _, receipt)) = pending.last() {
 				match receipt {
-					Receipt::Legacy(d) | Receipt::EIP2930(d) | Receipt::EIP1559(d) =>
-						d.used_gas.saturating_add(used_gas),
+					Receipt::Legacy(d) | Receipt::EIP2930(d) | Receipt::EIP1559(d) => {
+						d.used_gas.saturating_add(used_gas)
+					}
 				}
 			} else {
 				used_gas
@@ -735,7 +761,7 @@ impl<T: Config> Pallet<T> {
 						t.action,
 						Vec::new(),
 					)
-				},
+				}
 				Transaction::EIP2930(t) => {
 					let base_fee = T::FeeCalculator::min_gas_price();
 					let priority_fee = t
@@ -757,7 +783,7 @@ impl<T: Config> Pallet<T> {
 						t.action,
 						access_list,
 					)
-				},
+				}
 				Transaction::EIP1559(t) => {
 					let access_list: Vec<(H160, Vec<H256>)> = t
 						.access_list
@@ -774,7 +800,7 @@ impl<T: Config> Pallet<T> {
 						t.action,
 						access_list,
 					)
-				},
+				}
 			}
 		};
 
@@ -795,7 +821,7 @@ impl<T: Config> Pallet<T> {
 				.map_err(Into::into)?;
 
 				Ok((Some(target), None, CallOrCreateInfo::Call(res)))
-			},
+			}
 			ethereum::TransactionAction::Create => {
 				let res = T::Runner::create(
 					from,
@@ -811,7 +837,7 @@ impl<T: Config> Pallet<T> {
 				.map_err(Into::into)?;
 
 				Ok((None, Some(res.value), CallOrCreateInfo::Create(res)))
-			},
+			}
 		}
 	}
 
@@ -830,40 +856,91 @@ impl<T: Config> Pallet<T> {
 		// In the context of the block, a transaction with a nonce that is
 		// too high should be considered invalid and make the whole block invalid.
 		if transaction_nonce > account_nonce {
-			Err(TransactionValidityError::Invalid(InvalidTransaction::Future))
+			Err(TransactionValidityError::Invalid(
+				InvalidTransaction::Future,
+			))
 		} else if transaction_nonce < account_nonce {
 			Err(TransactionValidityError::Invalid(InvalidTransaction::Stale))
 		} else {
 			Ok(())
 		}
 	}
+
+	pub fn migrate_block_v0_to_v2() -> Weight {
+		let db_weights = T::DbWeight::get();
+		let mut weight: Weight = db_weights.read;
+		let item = b"CurrentBlock";
+		let block_v0 = frame_support::storage::migration::get_storage_value::<ethereum::BlockV0>(
+			Self::name().as_bytes(),
+			item,
+			&[],
+		);
+		if let Some(block_v0) = block_v0 {
+			weight = weight.saturating_add(db_weights.write);
+			let block_v2: ethereum::BlockV2 = block_v0.into();
+			frame_support::storage::migration::put_storage_value::<ethereum::BlockV2>(
+				Self::name().as_bytes(),
+				item,
+				&[],
+				block_v2,
+			);
+		}
+		weight
+	}
+
+	#[cfg(feature = "try-runtime")]
+	pub fn pre_migrate_block_v2() -> Result<(), &'static str> {
+		let item = b"CurrentBlock";
+		let block_v0 = frame_support::storage::migration::get_storage_value::<ethereum::BlockV0>(
+			Self::name().as_bytes(),
+			item,
+			&[],
+		);
+		if let Some(block_v0) = block_v0 {
+			Self::set_temp_storage(block_v0.header.number, "number");
+			Self::set_temp_storage(block_v0.header.parent_hash, "parent_hash");
+			Self::set_temp_storage(block_v0.transactions.len() as u64, "transaction_len");
+		}
+		Ok(())
+	}
+
+	#[cfg(feature = "try-runtime")]
+	pub fn post_migrate_block_v2() -> Result<(), &'static str> {
+		let v0_number =
+			Self::get_temp_storage("number").expect("We stored a number; it should be there; qed");
+		let v0_parent_hash = Self::get_temp_storage("parent_hash")
+			.expect("We stored a parent hash; it should be there; qed");
+		let v0_transaction_len: u64 = Self::get_temp_storage("transaction_len")
+			.expect("We stored a transaction count; it should be there; qed");
+
+		let item = b"CurrentBlock";
+		let block_v2 = frame_support::storage::migration::get_storage_value::<ethereum::BlockV2>(
+			Self::name().as_bytes(),
+			item,
+			&[],
+		);
+
+		assert!(block_v2.is_some());
+
+		let block_v2 = block_v2.unwrap();
+		assert_eq!(block_v2.header.number, v0_number);
+		assert_eq!(block_v2.header.parent_hash, v0_parent_hash);
+		assert_eq!(block_v2.transactions.len() as u64, v0_transaction_len);
+		Ok(())
+	}
 }
 
-#[derive(Eq, PartialEq, Clone, sp_runtime::RuntimeDebug)]
+#[derive(Eq, PartialEq, Clone, RuntimeDebug)]
 pub enum ReturnValue {
 	Bytes(Vec<u8>),
 	Hash(H160),
 }
 
-/// The schema version for Pallet Ethereum's storage
-#[derive(Clone, Copy, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord)]
-pub enum EthereumStorageSchema {
-	Undefined,
-	V1,
-	V2,
-	V3,
-}
-
-impl Default for EthereumStorageSchema {
-	fn default() -> Self {
-		Self::Undefined
-	}
-}
-
-pub struct IntermediateStateRoot;
-impl Get<H256> for IntermediateStateRoot {
+pub struct IntermediateStateRoot<T>(PhantomData<T>);
+impl<T: Config> Get<H256> for IntermediateStateRoot<T> {
 	fn get() -> H256 {
-		H256::decode(&mut &sp_io::storage::root()[..])
+		let version = T::Version::get().state_version();
+		H256::decode(&mut &sp_io::storage::root(version)[..])
 			.expect("Node is configured to use the same hash; qed")
 	}
 }

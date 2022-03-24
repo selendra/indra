@@ -67,7 +67,11 @@ pub struct TransactionRequest {
 
 impl Into<Option<TransactionMessage>> for TransactionRequest {
 	fn into(self) -> Option<TransactionMessage> {
-		match (self.gas_price, self.max_fee_per_gas, self.access_list.clone()) {
+		match (
+			self.gas_price,
+			self.max_fee_per_gas,
+			self.access_list.clone(),
+		) {
 			// Legacy
 			(Some(_), None, None) => Some(TransactionMessage::Legacy(LegacyTransactionMessage {
 				nonce: U256::zero(),
@@ -93,7 +97,12 @@ impl Into<Option<TransactionMessage>> for TransactionRequest {
 					None => ethereum::TransactionAction::Create,
 				},
 				chain_id: 0,
-				access_list: self.access_list.unwrap().into_iter().map(|item| item).collect(),
+				access_list: self
+					.access_list
+					.unwrap()
+					.into_iter()
+					.map(|item| item)
+					.collect(),
 			})),
 			// EIP1559
 			(None, Some(_), _) | (None, None, None) => {
@@ -119,7 +128,7 @@ impl Into<Option<TransactionMessage>> for TransactionRequest {
 						.map(|item| item)
 						.collect(),
 				}))
-			},
+			}
 			_ => None,
 		}
 	}

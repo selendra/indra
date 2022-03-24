@@ -18,19 +18,18 @@
 
 mod utils;
 
-pub use sp_database::Database;
-
-use codec::{Decode, Encode};
-use fp_storage::PALLET_ETHEREUM_SCHEMA_CACHE;
-use pallet_ethereum::EthereumStorageSchema;
-use parking_lot::Mutex;
-use sp_core::H256;
-use sp_runtime::traits::Block as BlockT;
 use std::{
 	marker::PhantomData,
 	path::{Path, PathBuf},
 	sync::Arc,
 };
+
+use codec::{Decode, Encode};
+use fp_storage::{EthereumStorageSchema, PALLET_ETHEREUM_SCHEMA_CACHE};
+use parking_lot::Mutex;
+use sp_core::H256;
+pub use sp_database::Database;
+use sp_runtime::traits::Block as BlockT;
 
 const DB_HASH_LEN: usize = 32;
 /// Hash type that this backend uses for the database.
@@ -91,7 +90,10 @@ impl<Block: BlockT> Backend<Block> {
 				write_lock: Arc::new(Mutex::new(())),
 				_marker: PhantomData,
 			}),
-			meta: Arc::new(MetaDb { db: db.clone(), _marker: PhantomData }),
+			meta: Arc::new(MetaDb {
+				db: db.clone(),
+				_marker: PhantomData,
+			}),
 		})
 	}
 
@@ -111,9 +113,13 @@ pub struct MetaDb<Block: BlockT> {
 
 impl<Block: BlockT> MetaDb<Block> {
 	pub fn current_syncing_tips(&self) -> Result<Vec<Block::Hash>, String> {
-		match self.db.get(crate::columns::META, &crate::static_keys::CURRENT_SYNCING_TIPS) {
-			Some(raw) =>
-				Ok(Vec::<Block::Hash>::decode(&mut &raw[..]).map_err(|e| format!("{:?}", e))?),
+		match self.db.get(
+			crate::columns::META,
+			&crate::static_keys::CURRENT_SYNCING_TIPS,
+		) {
+			Some(raw) => {
+				Ok(Vec::<Block::Hash>::decode(&mut &raw[..]).map_err(|e| format!("{:?}", e))?)
+			}
 			None => Ok(Vec::new()),
 		}
 	}
@@ -127,14 +133,21 @@ impl<Block: BlockT> MetaDb<Block> {
 			&tips.encode(),
 		);
 
-		self.db.commit(transaction).map_err(|e| format!("{:?}", e))?;
+		self.db
+			.commit(transaction)
+			.map_err(|e| format!("{:?}", e))?;
 
 		Ok(())
 	}
 
 	pub fn ethereum_schema(&self) -> Result<Option<Vec<(EthereumStorageSchema, H256)>>, String> {
-		match self.db.get(crate::columns::META, &PALLET_ETHEREUM_SCHEMA_CACHE.encode()) {
-			Some(raw) => Ok(Some(Decode::decode(&mut &raw[..]).map_err(|e| format!("{:?}", e))?)),
+		match self
+			.db
+			.get(crate::columns::META, &PALLET_ETHEREUM_SCHEMA_CACHE.encode())
+		{
+			Some(raw) => Ok(Some(
+				Decode::decode(&mut &raw[..]).map_err(|e| format!("{:?}", e))?,
+			)),
 			None => Ok(None),
 		}
 	}
@@ -151,7 +164,9 @@ impl<Block: BlockT> MetaDb<Block> {
 			&new_cache.encode(),
 		);
 
-		self.db.commit(transaction).map_err(|e| format!("{:?}", e))?;
+		self.db
+			.commit(transaction)
+			.map_err(|e| format!("{:?}", e))?;
 
 		Ok(())
 	}
@@ -178,16 +193,23 @@ pub struct MappingDb<Block: BlockT> {
 
 impl<Block: BlockT> MappingDb<Block> {
 	pub fn is_synced(&self, block_hash: &Block::Hash) -> Result<bool, String> {
-		match self.db.get(crate::columns::SYNCED_MAPPING, &block_hash.encode()) {
+		match self
+			.db
+			.get(crate::columns::SYNCED_MAPPING, &block_hash.encode())
+		{
 			Some(raw) => Ok(bool::decode(&mut &raw[..]).map_err(|e| format!("{:?}", e))?),
 			None => Ok(false),
 		}
 	}
 
 	pub fn block_hash(&self, ethereum_block_hash: &H256) -> Result<Option<Block::Hash>, String> {
-		match self.db.get(crate::columns::BLOCK_MAPPING, &ethereum_block_hash.encode()) {
-			Some(raw) =>
-				Ok(Some(Block::Hash::decode(&mut &raw[..]).map_err(|e| format!("{:?}", e))?)),
+		match self
+			.db
+			.get(crate::columns::BLOCK_MAPPING, &ethereum_block_hash.encode())
+		{
+			Some(raw) => Ok(Some(
+				Block::Hash::decode(&mut &raw[..]).map_err(|e| format!("{:?}", e))?,
+			)),
 			None => Ok(None),
 		}
 	}
@@ -196,10 +218,10 @@ impl<Block: BlockT> MappingDb<Block> {
 		&self,
 		ethereum_transaction_hash: &H256,
 	) -> Result<Vec<TransactionMetadata<Block>>, String> {
-		match self
-			.db
-			.get(crate::columns::TRANSACTION_MAPPING, &ethereum_transaction_hash.encode())
-		{
+		match self.db.get(
+			crate::columns::TRANSACTION_MAPPING,
+			&ethereum_transaction_hash.encode(),
+		) {
 			Some(raw) => Ok(Vec::<TransactionMetadata<Block>>::decode(&mut &raw[..])
 				.map_err(|e| format!("{:?}", e))?),
 			None => Ok(Vec::new()),
@@ -211,9 +233,15 @@ impl<Block: BlockT> MappingDb<Block> {
 
 		let mut transaction = sp_database::Transaction::new();
 
-		transaction.set(crate::columns::SYNCED_MAPPING, &block_hash.encode(), &true.encode());
+		transaction.set(
+			crate::columns::SYNCED_MAPPING,
+			&block_hash.encode(),
+			&true.encode(),
+		);
 
-		self.db.commit(transaction).map_err(|e| format!("{:?}", e))?;
+		self.db
+			.commit(transaction)
+			.map_err(|e| format!("{:?}", e))?;
 
 		Ok(())
 	}
@@ -229,8 +257,10 @@ impl<Block: BlockT> MappingDb<Block> {
 			&commitment.block_hash.encode(),
 		);
 
-		for (i, ethereum_transaction_hash) in
-			commitment.ethereum_transaction_hashes.into_iter().enumerate()
+		for (i, ethereum_transaction_hash) in commitment
+			.ethereum_transaction_hashes
+			.into_iter()
+			.enumerate()
 		{
 			let mut metadata = self.transaction_metadata(&ethereum_transaction_hash)?;
 			metadata.push(TransactionMetadata::<Block> {
@@ -251,7 +281,9 @@ impl<Block: BlockT> MappingDb<Block> {
 			&true.encode(),
 		);
 
-		self.db.commit(transaction).map_err(|e| format!("{:?}", e))?;
+		self.db
+			.commit(transaction)
+			.map_err(|e| format!("{:?}", e))?;
 
 		Ok(())
 	}

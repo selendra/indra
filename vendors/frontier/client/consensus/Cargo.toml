@@ -10,6 +10,7 @@ repository = "https://github.com/paritytech/frontier/"
 [dependencies]
 async-trait = "0.1"
 thiserror = "1.0"
+derive_more = "0.99.2"
 
 sp-api = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.17" }
 sp-block-builder = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.17" }

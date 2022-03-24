@@ -373,6 +373,13 @@ where
 		),
 	);
 
+	let block_data_cache = Arc::new(fc_rpc::EthBlockDataCache::new(
+		task_manager.spawn_handle(),
+		overrides.clone(),
+		50,
+		50,
+	));
+
 	let rpc_extensions_builder = {
 		let client = client.clone();
 		let network = network.clone();
@@ -390,9 +397,11 @@ where
 				filter_pool: filter_pool.clone(),
 				fee_history_limit: FEE_HISTORY_LIMIT,
 				fee_history_cache: fee_history_cache.clone(),
+				block_data_cache: block_data_cache.clone(),
+				overrides: overrides.clone(),
 			};
 
-			Ok(crate::rpc::create_full(deps, subscription, overrides.clone()))
+			Ok(crate::rpc::create_full(deps, subscription))
 		})
 	};
 

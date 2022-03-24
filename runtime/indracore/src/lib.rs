@@ -22,8 +22,8 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-pub mod constants;
 mod configurations;
+pub mod constants;
 mod weights;
 
 use configurations::{evm_config, xcm_config};
@@ -337,17 +337,17 @@ impl parachain_info::Config for Runtime {}
 
 impl cumulus_pallet_aura_ext::Config for Runtime {}
 
-impl cumulus_pallet_xcm::Config for Runtime {
-	type Event = Event;
-	type XcmExecutor = XcmExecutor<xcm_config::XcmConfig>;
-}
-
 impl cumulus_pallet_xcmp_queue::Config for Runtime {
 	type Event = Event;
 	type XcmExecutor = XcmExecutor<xcm_config::XcmConfig>;
 	type ChannelInfo = ParachainSystem;
 	type VersionWrapper = SelendraXcm;
 	type ExecuteOverweightOrigin = EnsureRoot<AccountId>;
+	type ControllerOrigin = EnsureOneOf<
+		EnsureRoot<AccountId>,
+		EnsureXcm<IsMajorityOfBody<xcm_config::SelLocation, ExecutiveBody>>,
+	>;
+	type ControllerOriginConverter = xcm_config::XcmOriginToTransactDispatchOrigin;
 }
 
 impl cumulus_pallet_dmp_queue::Config for Runtime {

@@ -284,7 +284,11 @@ fn indracore_genesis(
 		},
 		evm: Default::default(),
 		ethereum: Default::default(),
-		base_fee: Default::default(),
+		base_fee: indracore_runtime::BaseFeeConfig::new(
+			sp_core::U256::from(1_000_000_000),
+			false,
+			sp_runtime::Permill::from_parts(125_000),
+		),
 		sudo: indracore_runtime::SudoConfig { key: Some(root_key) },
 	}
 }
@@ -471,7 +475,11 @@ fn indranet_genesis(
 		},
 		evm: Default::default(),
 		ethereum: Default::default(),
-		base_fee: Default::default(),
+		base_fee: indranet_runtime::BaseFeeConfig::new(
+			sp_core::U256::from(1_000_000_000),
+			false,
+			sp_runtime::Permill::from_parts(125_000),
+		),
 		sudo: indranet_runtime::SudoConfig { key: Some(root_key) },
 	}
 }

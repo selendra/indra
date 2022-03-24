@@ -38,7 +38,7 @@ impl<R> IndracorePrecompiles<R> {
 impl<R> PrecompileSet for IndracorePrecompiles<R>
 where
 	R: pallet_evm::Config,
-	<R::Call as Dispatchable>::Origin: From<Option<R::AccountId>>,
+	Dispatch<R>: Precompile,
 	R::Call: Dispatchable<PostInfo = PostDispatchInfo> + GetDispatchInfo + Decode,
 {
 	fn execute(

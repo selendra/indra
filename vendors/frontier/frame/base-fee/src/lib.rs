@@ -59,12 +59,7 @@ pub mod pallet {
 	#[cfg(feature = "std")]
 	impl<T: Config> GenesisConfig<T> {
 		pub fn new(base_fee_per_gas: U256, is_active: bool, elasticity: Permill) -> Self {
-			Self {
-				base_fee_per_gas,
-				is_active,
-				elasticity,
-				_marker: PhantomData,
-			}
+			Self { base_fee_per_gas, is_active, elasticity, _marker: PhantomData }
 		}
 	}
 
@@ -279,9 +274,7 @@ mod tests {
 	};
 
 	pub fn new_test_ext(base_fee: Option<U256>) -> TestExternalities {
-		let mut t = frame_system::GenesisConfig::default()
-			.build_storage::<Test>()
-			.unwrap();
+		let mut t = frame_system::GenesisConfig::default().build_storage::<Test>().unwrap();
 
 		if let Some(base_fee) = base_fee {
 			pallet_base_fee::GenesisConfig::<Test>::new(
@@ -373,10 +366,7 @@ mod tests {
 	#[test]
 	fn should_default() {
 		new_test_ext(None).execute_with(|| {
-			assert_eq!(
-				BaseFee::base_fee_per_gas(),
-				U256::from(100_000_000_000 as u128)
-			);
+			assert_eq!(BaseFee::base_fee_per_gas(), U256::from(100_000_000_000 as u128));
 		});
 	}
 
@@ -502,10 +492,7 @@ mod tests {
 		let base_fee = U256::from(1_000_000_000);
 		new_test_ext(Some(base_fee)).execute_with(|| {
 			assert_eq!(BaseFee::elasticity(), Permill::from_parts(125_000));
-			assert_ok!(BaseFee::set_elasticity(
-				Origin::root(),
-				Permill::from_parts(1_000)
-			));
+			assert_ok!(BaseFee::set_elasticity(Origin::root(), Permill::from_parts(1_000)));
 			assert_eq!(BaseFee::elasticity(), Permill::from_parts(1_000));
 		});
 	}

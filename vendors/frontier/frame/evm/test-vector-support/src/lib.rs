@@ -63,11 +63,7 @@ pub fn test_precompile_test_vectors<P: Precompile>(filepath: &str) -> Result<(),
 					test.Name,
 					result.exit_status
 				);
-				assert_eq!(
-					as_hex, test.Expected,
-					"test '{}' failed (different output)",
-					test.Name
-				);
+				assert_eq!(as_hex, test.Expected, "test '{}' failed (different output)", test.Name);
 				if let Some(expected_gas) = test.Gas {
 					assert_eq!(
 						result.cost, expected_gas,
@@ -75,10 +71,8 @@ pub fn test_precompile_test_vectors<P: Precompile>(filepath: &str) -> Result<(),
 						test.Name
 					);
 				}
-			}
-			Err(err) => {
-				return Err(format!("Test '{}' returned error: {:?}", test.Name, err));
-			}
+			},
+			Err(err) => return Err(format!("Test '{}' returned error: {:?}", test.Name, err)),
 		}
 	}
 

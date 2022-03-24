@@ -20,7 +20,7 @@ frame-system = { git = "https://github.com/paritytech/substrate", branch = "polk
 [dev-dependencies]
 pallet-balances = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.16" }
 libsecp256k1 = "0.6.0"
-hex-literal = "0.2.1"
+hex-literal = "0.3.4"
 sp-keyring = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.16" }
 sp-core = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.16" }
 

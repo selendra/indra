@@ -13,9 +13,9 @@ path = "src/main.rs"
 futures = { version = "0.3.1", features = ["compat"] }
 log = "0.4.8"
 codec = { package = "parity-scale-codec", version = "2.3.0" }
-structopt = "0.3.3"
+clap = { version = "3.1.2", features = ["derive"] }
 serde = { version = "1.0.132", features = ["derive"] }
-hex-literal = "0.2.1"
+hex-literal = "0.3.4"
 async-trait = "0.1.42"
 
 # Parachain runtimes
@@ -98,8 +98,8 @@ pallet-ethereum = { path = "../vendors/frontier/frame/ethereum" }
 substrate-build-script-utils = { git = "https://github.com/paritytech/substrate", branch = "polkadot-v0.9.16" }
 
 [dev-dependencies]
-assert_cmd = "0.12"
-nix = "0.17"
+assert_cmd = "2.0"
+nix = "0.23"
 tempfile = "3.2.0"
 
 [features]

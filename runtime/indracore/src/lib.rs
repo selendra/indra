@@ -86,7 +86,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("indracore"),
 	impl_name: create_runtime_str!("indracore"),
 	authoring_version: 1,
-	spec_version: 002,
+	spec_version: 003,
 	impl_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 5,
@@ -121,7 +121,7 @@ parameter_types! {
 		})
 		.avg_block_initialization(AVERAGE_ON_INITIALIZE_RATIO)
 		.build_or_panic();
-	pub const SS58Prefix: u16 = 972;
+	pub const SS58Prefix: u16 = 204;
 }
 
 // Configure FRAME pallets to include in runtime.

@@ -175,7 +175,7 @@ The collator node may need to be restarted to get it functioning as expected. Af
 We need to inform the relay chain we will be running an upgrade, so we send them a hash of our wasm blob via a sudo extrinsic call from our parachain
 
 ```sh
-sudo > parachainSystem > enactAuthorize
+sudo > parachainSystem > authorizeUpgrade
 ```
 
 Once that has been submitted correctly then:

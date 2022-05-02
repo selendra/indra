@@ -2,7 +2,12 @@
   "name": "Indranet",
   "id": "indranet",
   "chainType": "Live",
-  "bootNodes": [],
+  "bootNodes": [
+    "/ip4/139.180.189.231/tcp/40333/p2p/12D3KooWFoRcyKjL4Rs7XP3PuBsjAiS8uUQZLy95yvrrv6A8MEZG",
+    "/ip4/27.96.87.93/tcp/40333/p2p/12D3KooWDoRru1UBbPkjhzCucAfzLTVKJTqZDbPEdENgosF4w1pT",
+    "/ip4/207.148.101.150/tcp/40333/p2p/12D3KooWS2io3ARUxYdTiQg7njqQysyriVj1xHbRDwhYty2dUrFp",
+    "/ip4/165.22.104.155/tcp/30333/ws/p2p/12D3KooWN1gAPbUnoARdybbmtfDtyJKjfHBxPe1ZrLrtb4NSoRRj"
+  ],
   "telemetryEndpoints": null,
   "protocolId": "sel",
   "forkId": null,

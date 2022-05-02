@@ -191,7 +191,7 @@ pub fn indracore_local_config() -> IndracoreChainSpec {
 
 pub fn indracore_config() -> IndracoreChainSpec {
 	let mut properties = sc_chain_spec::Properties::new();
-	properties.insert("ss58Format".into(), 972.into());
+	properties.insert("ss58Format".into(), 204.into());
 	properties.insert("tokenSymbol".into(), "SEL".into());
 	properties.insert("tokenDecimals".into(), 18.into());
 

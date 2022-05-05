@@ -86,7 +86,7 @@ pub const VERSION: RuntimeVersion = RuntimeVersion {
 	spec_name: create_runtime_str!("indranet"),
 	impl_name: create_runtime_str!("indranet"),
 	authoring_version: 1,
-	spec_version: 003,
+	spec_version: 104,
 	impl_version: 0,
 	apis: RUNTIME_API_VERSIONS,
 	transaction_version: 5,
@@ -435,7 +435,7 @@ impl pallet_vesting::Config for Runtime {
 
 parameter_types! {
 	pub const BridgeChainId: u8 = 1;
-	pub const ProposalLifetime: BlockNumber = 50;
+	pub const ProposalLifetime: BlockNumber = 100;
 }
 
 /// We allow root and the Relay Chain council to execute privileged collator selection operations.
@@ -453,7 +453,7 @@ impl pallet_bridge::Config for Runtime {
 }
 
 parameter_types! {
-	pub const NativeTokenResourceId: [u8; 32] = hex_literal::hex!("0000000000000000000000Dd030D6a093B75972aF6B458Af84eA09384Db5D704");
+	pub const NativeTokenResourceId: [u8; 32] = hex_literal::hex!("00000000000000000000004aD78f1d383F4923DFFA5208C2564D1d51b0832561");
 }
 
 impl pallet_bridge_transfer::Config for Runtime {
